@@ -1,3 +1,0 @@
-lch_seo_homepage:
-    path:     /
-    defaults: { _controller: LchSeoBundle:Default:index }
