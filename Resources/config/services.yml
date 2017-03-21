@@ -1,4 +1,15 @@
+parameters:
+  lch.seo.tools.class: Lch\SeoBundle\Service\Tools
+  lch.seo.twig.extension.class: Lch\SeoBundle\Twig\SeoExtension
+
 services:
-#    lch_seo.example:
-#        class: Lch\SeoBundle\Example
-#        arguments: ["@service_id", "plain_value", "%parameter%"]
+  lch.seo.twig.extension:
+    class: "%lch.seo.twig.extension.class%"
+    tags:
+      - { name: twig.extension }
+    lazy: true
+
+  lch.seo.tools:
+    class: "%lch.seo.tools.class%"
+    arguments: ['@doctrine.orm.entity_manager', '@event_dispatcher']
+    lazy: true

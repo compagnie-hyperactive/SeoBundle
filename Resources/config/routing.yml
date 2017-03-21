@@ -1,0 +1,6 @@
+lch_seo_generate_slug:
+    path: /seo/generate/slug
+    defaults: { _controller: LchSeoBundle:Seo:generateSlug }
+    methods:  [ POST ]
+    options:
+        expose: true

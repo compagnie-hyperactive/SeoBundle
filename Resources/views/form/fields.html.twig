@@ -1,0 +1,47 @@
+{% trans_default_domain 'LchSeoBundle' %}
+{% block lch_seo_type_widget %}
+    {% spaceless %}
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3>{{ "lch.seo.form.seo_panel.title"|trans }}</h3>
+			</div>
+			<div class="panel-body">
+				{{ form_row(form.seoTitle) }}
+				{{ form_row(form.seoDescription) }}
+				<div class="col-xs-12 no-gutter">
+					{{ form_label(form.slug) }}
+					<div class="col-xs-8 widget">
+						{{ form_widget(form.slug) }}
+						<p class="col-xs-12 helper">
+							<i class="glyphicon glyphicon-question-sign"></i>
+							{% if(form.parent.vars.value.id != "") %}
+								{% set fields = [] %}
+								{% for routefield, entityField in form.parent.vars.value.getRouteFields %}
+									{% set fields = fields|merge({ (routefield) : attribute(form.parent.vars.value, entityField)}) %}
+								{% endfor %}
+                                {{ 'lch.seo.form.url.example'|trans({'%url%': path(form.vars.route_for_url, fields)})|raw }}
+							{% else %}
+                                {{ 'lch.seo.form.url.example'|trans({'%url%': path(form.vars.route_for_url, form.parent.vars.value.getRouteFields)})|raw }}
+							{% endif %}
+						</p>
+						<div class="col-xs-12 errors alert alert-danger">
+							<p class="hidden"><span class="glyphicon glyphicon-exclamation-sign"></span><span class="text"></span></p>
+						</div>
+					</div>
+					<div class="col-xs-2">
+						<a class="btn btn-default"
+						   role="button"
+						   id="generateSlug"
+						   data-fields='{{ form.parent.vars.value.getSluggableFields|json_encode }}'
+						   data-entity="{{ getEntityClass(form.parent.vars.value) }}"
+						   data-route="{{ form.vars.route_for_url }}"
+						>
+								<i class="glyphicon glyphicon-repeat"></i>
+								{{ 'lch.seo.form.url.generate'|trans }}
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	{% endspaceless %}
+{% endblock %}

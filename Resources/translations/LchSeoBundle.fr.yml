@@ -1,0 +1,18 @@
+lch:
+  seo:
+    form:
+      seo_panel:
+        title: SEO
+      label: Référencement
+      title:
+        name: Titre
+        helper: C'est le titre qui apparaîtra dans la balise title.
+        maxCar: '%title_max_char% caractères max'
+      description:
+        name: Description
+        helper: C'est la description qui apparaîtra dans <strong>la balise description</strong>.
+        maxCar: '%description_max_char% caractères max'
+      url:
+        name: URL simplifliée
+        generate: Générer
+        example: 'Le permalien sera : <strong>%url%</strong>'
