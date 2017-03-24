@@ -20,3 +20,6 @@ Add Seoable to any entity you want to have SEO settings. This include
 We assume that a unique constraint/index is set on slug field, or slug fields collection if more than one.
  
 Add SeoType to the Seoable entity type
+entity must implement SeoInterface
+
+Add call to $this->get('lch.seo.tools')->seoFilling on controller before persist to ensure data will be set

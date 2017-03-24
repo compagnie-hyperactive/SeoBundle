@@ -14,5 +14,6 @@ lch:
         maxCar: '%description_max_char% caractères max'
       url:
         name: URL simplifliée
+        see: Voir en front
         generate: Générer
         example: 'Le permalien sera : <strong>%url%</strong>'
