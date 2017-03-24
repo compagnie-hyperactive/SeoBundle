@@ -17,7 +17,7 @@
 							{% if(form.parent.vars.value.id != "") %}
 								{% set fields = [] %}
 								{% for routefield, entityField in form.parent.vars.value.getRouteFields %}
-									{% set fields = fields|merge({ (routefield) : attribute(form.parent.vars.value, entityField)}|default((routefield))) %}
+									{% set fields = fields|merge({ (routefield) : attribute(form.parent.vars.value, entityField)|default((routefield))}) %}
 								{% endfor %}
                                 {{ 'lch.seo.form.url.example'|trans({'%url%': path(form.vars.route_for_url, fields)})|raw }}
 							{% else %}
