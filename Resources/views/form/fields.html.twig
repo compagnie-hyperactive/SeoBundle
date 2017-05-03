@@ -21,7 +21,7 @@
 								{% endfor %}
 								<span>{{ 'lch.seo.form.url.example'|trans({'%url%': path(form.vars.route_for_url, fields)})|raw }}</span>
 								<span>&nbsp;&nbsp;&nbsp;</span>
-							  	<a href="{{ path(form.vars.route_for_url, fields) }}" target="_blank">{{ 'lch.seo.form.url.see' }}</a>
+							  	<a href="{{ path(form.vars.route_for_url, fields) }}" target="_blank">{{ 'lch.seo.form.url.see'|trans }}</a>
 							{% else %}
                                 {{ 'lch.seo.form.url.example'|trans({'%url%': path(form.vars.route_for_url, form.parent.vars.value.getRouteFields)})|raw }}
 							{% endif %}
