@@ -1,2 +1,16 @@
 <title>{{ entity.seoTitle }}</title>
-<meta name="description" content="{% if entity != null %}{{ entity.seoDescription }}{% endif %}">
+<meta name="description" content="{{ entity.seoDescription }}">
+
+{% for key, data in entity.getOpenGraphData %}
+    <meta property="og:{{ key }}" content="{{ data }}" />
+{% endfor %}
+
+{# Add OG description #}
+<meta property="og:description" content="{{ entity.seoDescription }}" />
+
+{# Add link using the route and route params forced by interface compliance #}
+{% set fields = [] %}
+{% for routefield, entityField in entity.getRouteFields %}
+    {% set fields = fields|merge({ (routefield) : attribute(entity, entityField)|default((routefield))}) %}
+{% endfor %}
+<meta property="og:link" content="{{ url(entity.getRouteName, fields) }}" />
