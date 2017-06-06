@@ -62,8 +62,6 @@ class SeoType extends AbstractType
             'inherit_data' => true,
             'title_max_char' => 60,
             'description_max_char' => 155,
-            // This is the route to use for generating URL to display
-            'route_for_url' => ''
         ));
     }
 
@@ -78,9 +76,7 @@ class SeoType extends AbstractType
 
         $view->vars = array_merge($view->vars, array(
             'title_max_char' => $options['title_max_char'],
-            'description_max_char' => $options['description_max_char'],
-            // TODO add exception if route is missing
-            'route_for_url' => $options['route_for_url']
+            'description_max_char' => $options['description_max_char']
         ));
     }
 

@@ -19,11 +19,11 @@
 								{% for routefield, entityField in form.parent.vars.value.getRouteFields %}
 									{% set fields = fields|merge({ (routefield) : attribute(form.parent.vars.value, entityField)|default((routefield))}) %}
 								{% endfor %}
-								<span>{{ 'lch.seo.form.url.example'|trans({'%url%': path(form.vars.route_for_url, fields)})|raw }}</span>
+								<span>{{ 'lch.seo.form.url.example'|trans({'%url%': path(form.vars.value.getRouteName, fields)})|raw }}</span>
 								<span>&nbsp;&nbsp;&nbsp;</span>
-							  	<a href="{{ path(form.vars.route_for_url, fields) }}" target="_blank">{{ 'lch.seo.form.url.see'|trans }}</a>
+							  	<a href="{{ path(form.vars.value.getRouteName, fields) }}" target="_blank">{{ 'lch.seo.form.url.see'|trans }}</a>
 							{% else %}
-                                {{ 'lch.seo.form.url.example'|trans({'%url%': path(form.vars.route_for_url, form.parent.vars.value.getRouteFields)})|raw }}
+                                {{ 'lch.seo.form.url.example'|trans({'%url%': path(form.vars.value.getRouteName, form.parent.vars.value.getRouteFields)})|raw }}
 							{% endif %}
 						</p>
 						<div class="col-xs-12 errors alert alert-danger">
@@ -36,7 +36,7 @@
 						   id="generateSlug"
 						   data-fields='{{ form.parent.vars.value.getSluggableFields|json_encode }}'
 						   data-entity="{{ getEntityClass(form.parent.vars.value) }}"
-						   data-route="{{ form.vars.route_for_url }}"
+						   data-route="{{ form.vars.value.getRouteName }}"
 						>
 								<i class="glyphicon glyphicon-repeat"></i>
 								{{ 'lch.seo.form.url.generate'|trans }}

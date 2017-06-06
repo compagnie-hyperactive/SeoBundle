@@ -14,3 +14,6 @@
     {% set fields = fields|merge({ (routefield) : attribute(entity, entityField)|default((routefield))}) %}
 {% endfor %}
 <meta property="og:link" content="{{ url(entity.getRouteName, fields) }}" />
+
+{# Add canonical url#}
+<link rel="canonical" href="{{ url(entity.getRouteName, fields) }}" />
