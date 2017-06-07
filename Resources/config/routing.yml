@@ -7,4 +7,4 @@ lch_seo_generate_slug:
 
 lch_seo_sitemap:
   path:     /sitemap.xml
-  defaults: { _controller: LchMenuBundle:Sitemap:generateSitemap, _format: "xml" }
+  defaults: { _controller: LchSeoBundle:Sitemap:generateSitemap, _format: "xml" }
