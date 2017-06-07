@@ -179,13 +179,14 @@ class Tools
 
         // Add specific items
         foreach($this->sitemapParameters[Configuration::SPECIFIC] as $specific) {
+            $specificNode = $specific[Configuration::SITEMAP];
             $specificUrl = $urlSet->addChild('url');
-            $specificUrl->addChild(Configuration::LOC, $this->schemeAndHttpHost . $specific[Configuration::LOC]);
-            $specificUrl->addChild(Configuration::PRIORITY, $specific[Configuration::PRIORITY]);
+            $specificUrl->addChild(Configuration::LOC, $this->schemeAndHttpHost . $specificNode[Configuration::LOC]);
+            $specificUrl->addChild(Configuration::PRIORITY, $specificNode[Configuration::PRIORITY]);
         }
 
         // Loop on given entities for listing
-        foreach($this->sitemapParameters[Configuration::ENTITIES] as $entityClass => $data) {
+        foreach($this->sitemapParameters[Configuration::SITEMAP][Configuration::ENTITIES] as $entityClass => $data) {
             // Check given entity implements SeoInterface
             $reflection = new \ReflectionClass($entityClass);
 
@@ -224,7 +225,7 @@ class Tools
         $priority = 1.0;
         $urlParts = explode('/', $url);
         foreach ($urlParts as $part) {
-            $priority -= floatval($this->sitemapParameters[Configuration::STEP]);
+            $priority -= floatval($this->sitemapParameters[Configuration::SITEMAP][Configuration::STEP]);
         }
 
         return $priority;
