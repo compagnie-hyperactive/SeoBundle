@@ -24,5 +24,8 @@ class LchSeoExtension extends Extension
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
+        
+        // Add parameters : sitemap
+        $container->setParameter(Configuration::ROOT_PARAMETERS_NAMESPACE . '.' . Configuration::SITEMAP, $config[Configuration::SITEMAP]);
     }
 }

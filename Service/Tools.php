@@ -11,8 +11,12 @@ namespace Lch\SeoBundle\Service;
 
 use Doctrine\ORM\EntityManager;
 use Lch\SeoBundle\Behaviour\Seoable;
+use Lch\SeoBundle\DependencyInjection\Configuration;
 use Lch\SeoBundle\Event\GenerateSlugEvent;
+use Lch\SeoBundle\Exception\MissingSeoInterfaceException;
 use Lch\SeoBundle\LchSeoBundleEvents;
+use Lch\SeoBundle\Model\SeoInterface;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -37,13 +41,31 @@ class Tools
     private $propertyAccessor;
 
     /**
+     * @var Router
+     */
+    private $router;
+
+    /**
+     * @var array
+     */
+    private $sitemapParameters;
+
+    private $schemeAndHttpHost;
+
+    /**
      * Tools constructor.
      * @param EntityManager $entityManager
      * @param EventDispatcherInterface $eventDispatcher
+     * @param Router $router
+     * @param array $sitemapParameters
      */
-    public function __construct(EntityManager $entityManager, EventDispatcherInterface $eventDispatcher) {
+    public function __construct(EntityManager $entityManager, EventDispatcherInterface $eventDispatcher, Router $router, array $sitemapParameters) {
         $this->entityManager = $entityManager;
         $this->eventDispatcher = $eventDispatcher;
+        $this->router = $router;
+        $this->sitemapParameters = $sitemapParameters;
+
+        $this->schemeAndHttpHost = "{$this->router->getContext()->getScheme()}://{$this->router->getContext()->getHost()}";
 
         $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
     }
@@ -142,6 +164,69 @@ class Tools
         $stringToSanitize = strtolower( trim( preg_replace("/[^a-zA-Z0-9\/_|+ -]/", '', $stringToSanitize ), $delimiter ) );
         $slug = preg_replace("/[\/_|+ -]+/", $delimiter, $stringToSanitize);
         return $slug;
+    }
 
+    /**
+     * @return \SimpleXMLElement
+     */
+    public function generateSitemap()
+    {
+        $sitemap = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" ?><urlset />');
+
+        // Define urlset
+        $urlSet = $sitemap->addChild('urlset');
+        $urlSet->addAttribute('xlmns', 'http://www.sitemaps.org/schemas/sitemap/0.9');
+
+        // Add specific items
+        foreach($this->sitemapParameters[Configuration::SPECIFIC] as $specific) {
+            $specificUrl = $urlSet->addChild('url');
+            $specificUrl->addChild(Configuration::LOC, $this->schemeAndHttpHost . $specific[Configuration::LOC]);
+            $specificUrl->addChild(Configuration::PRIORITY, $specific[Configuration::PRIORITY]);
+        }
+
+        // Loop on given entities for listing
+        foreach($this->sitemapParameters[Configuration::ENTITIES] as $entityClass => $data) {
+            // Check given entity implements SeoInterface
+            $reflection = new \ReflectionClass($entityClass);
+
+            if(!$reflection->implementsInterface(SeoInterface::class)) {
+                throw new MissingSeoInterfaceException("{$entityClass} does not implements SeoInterface and therefore cannot be added to sitemap");
+            }
+
+            // Get all entities
+            // TODO enhance with custom generic repository?
+            $entities = $this->entityManager->getRepository($entityClass)->findAll();
+
+            // Loop on them and add them to urlset
+            foreach($entities as $entityInstance) {
+                if(!in_array($entityInstance->getId(), $data[Configuration::ENTITIES_EXCLUDE])) {
+                    $routeParameters = [];
+                    foreach($entityInstance->getRouteFields() as $routeParameter => $entityParameter) {
+                        $routeParameters[$routeParameter] = $this->propertyAccessor->getValue($entityInstance, $entityParameter);
+                    }
+                    $url = $this->router->generate($entityInstance->getRouteName(), $routeParameters, Router::ABSOLUTE_URL);
+
+                    $urlNode = $urlSet->addChild('url');
+                    $urlNode->addChild(Configuration::LOC, $url);
+                    $urlNode->addChild(Configuration::PRIORITY, $this->priorityCalculation($this->router->generate($entityInstance->getRouteName(), $routeParameters, Router::RELATIVE_PATH)));
+                }
+            }
+        }
+
+        return $sitemap;
+    }
+
+    /**
+     * @param string $url
+     * @return float
+     */
+    public function priorityCalculation(string $url) {
+        $priority = 1.0;
+        $urlParts = explode('/', $url);
+        foreach ($urlParts as $part) {
+            $priority -= floatval($this->sitemapParameters[Configuration::STEP]);
+        }
+
+        return $priority;
     }
 }

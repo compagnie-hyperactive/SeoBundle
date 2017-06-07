@@ -12,14 +12,59 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  */
 class Configuration implements ConfigurationInterface
 {
+    const ROOT_NAMESPACE = "lch_seo";
+    const ROOT_PARAMETERS_NAMESPACE = "lch.seo";
+
+    const SITEMAP = 'sitemap';
+    const STEP = 'step';
+    const STEP_DEFAULT_VALUE = 0.1;
+
+    const SPECIFIC = 'specific';
+    const LOC = 'loc';
+    const PRIORITY = 'priority';
+
+    const ENTITIES = 'entities';
+    const ENTITIES_EXCLUDE = 'exclude';
     /**
      * {@inheritdoc}
      */
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('lch_seo');
+        $rootNode = $treeBuilder->root(static::ROOT_NAMESPACE);
 
+
+        $rootNode
+            ->children()
+                ->arrayNode(static::SITEMAP)
+                    ->isRequired()
+                    ->children()
+                        ->scalarNode(static::STEP)
+                            ->defaultValue(static::STEP_DEFAULT_VALUE)
+                        ->end()
+                        ->arrayNode(static::SPECIFIC)
+                            ->prototype('array')
+                                ->children()
+                                    ->scalarNode(static::LOC)
+                                    ->end()
+                                    ->scalarNode(static::PRIORITY)
+                                    ->end()
+                                ->end()
+                            ->end()
+                        ->end()
+                        ->arrayNode(static::ENTITIES)
+                            ->prototype('array')
+                                ->children()
+                                    ->arrayNode(static::ENTITIES_EXCLUDE)
+                                        ->prototype('scalar')->end()
+                                    ->end()
+                                ->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
         // Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for
         // more information on that topic.
