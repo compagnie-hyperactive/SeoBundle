@@ -1,6 +1,10 @@
 lch_seo_generate_slug:
-    path: /seo/generate/slug
-    defaults: { _controller: LchSeoBundle:Seo:generateSlug }
-    methods:  [ POST ]
-    options:
-        expose: true
+  path: /seo/generate/slug
+  defaults: { _controller: LchSeoBundle:Seo:generateSlug }
+  methods:  [ POST ]
+  options:
+      expose: true
+
+lch_seo_sitemap:
+  path:     /sitemap.xml
+  defaults: { _controller: LchMenuBundle:Sitemap:generateSitemap, _format: "xml" }
