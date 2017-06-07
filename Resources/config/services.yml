@@ -5,7 +5,7 @@ parameters:
 services:
   lch.seo.twig.extension:
     class: "%lch.seo.twig.extension.class%"
-    arguments: ['@twig']
+    arguments: ['@twig', '@lch.seo.tools']
     tags:
       - { name: twig.extension }
     lazy: true

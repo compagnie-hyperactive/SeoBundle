@@ -9,6 +9,7 @@
 namespace Lch\SeoBundle\Twig;
 
 
+use Lch\SeoBundle\Service\Tools;
 use Symfony\Component\Config\Definition\Exception\Exception;
 
 class SeoExtension extends \Twig_Extension
@@ -18,8 +19,14 @@ class SeoExtension extends \Twig_Extension
      */
     private $twig;
 
-    public function __construct(\Twig_Environment $twig) {
+    /**
+     * @var Tools
+     */
+    private $seoTools;
+
+    public function __construct(\Twig_Environment $twig, Tools $seoTools) {
         $this->twig = $twig;
+        $this->seoTools = $seoTools;
     }
 
     public function getFunctions()
@@ -48,11 +55,14 @@ class SeoExtension extends \Twig_Extension
     }
 
 
-    public function renderSeoTags($entity = null) {
-        // TODO check entity is object and get Seoable trait
-        // TODO handle option for site title
+    /**
+     * @param mixed $entityOrRequest
+     * @return string
+     */
+    public function renderSeoTags($entityOrRequest) {
+        $seoTags = $this->seoTools->generateTags($entityOrRequest);
         return $this->twig->render('@LchSeo/Front/seo.html.twig', [
-            'entity' => $entity
+            'seoTags' => $seoTags
         ]);
     }
 }

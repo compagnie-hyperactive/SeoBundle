@@ -16,7 +16,6 @@ interface SeoInterface
     const OG_URL = 'url';
     const OG_IMAGE = 'image';
 
-
     /**
      * @return array all fields needed for slug generation
      */
@@ -39,7 +38,7 @@ interface SeoInterface
     public function getSeoTitleDefaultValue();
 
     /**
-     * @return array $openGraphData
+     * @return OpenGraph $openGraph
      */
     public function getOpenGraphData();
 }

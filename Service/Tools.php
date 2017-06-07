@@ -12,13 +12,17 @@ namespace Lch\SeoBundle\Service;
 use Doctrine\ORM\EntityManager;
 use Lch\SeoBundle\Behaviour\Seoable;
 use Lch\SeoBundle\DependencyInjection\Configuration;
+use Lch\SeoBundle\Event\GenerateSeoTagsEvent;
 use Lch\SeoBundle\Event\GenerateSlugEvent;
 use Lch\SeoBundle\Exception\MissingSeoInterfaceException;
 use Lch\SeoBundle\LchSeoBundleEvents;
+use Lch\SeoBundle\Model\OpenGraph;
 use Lch\SeoBundle\Model\SeoInterface;
+use Lch\SeoBundle\Model\SeoTags;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class Tools
@@ -167,6 +171,84 @@ class Tools
     }
 
     /**
+     * @param mixed|null $entityOrRequest
+     * @return SeoTags
+     */
+    public function generateTags($entityOrRequest) {
+
+        // Handle request, for specific pages not linked to entities
+        if($entityOrRequest instanceof Request) {
+            $openGraph = new OpenGraph();
+            $seoTags = new SeoTags();
+            $seoTags->setOpenGraph($openGraph);
+
+            // Check if specific entry in config.yml yml match current route
+            if(isset($this->sitemapParameters[Configuration::SPECIFIC][$entityOrRequest->get('_route')])) {
+                $specificNodeTags = $this->sitemapParameters[Configuration::SPECIFIC][$entityOrRequest->get('_route')][Configuration::TAGS];
+                $seoTags->setTitle($specificNodeTags[Configuration::TITLE]);
+                $seoTags->setDescription($specificNodeTags[Configuration::DESCRIPTION]);
+                $seoTags->setRoute($entityOrRequest->get('_route'));
+
+                // TODO ensure or use route parameters ?
+                $seoTags->setCanonicalUrl($this->router->generate($entityOrRequest->get('_route'), [], Router::ABSOLUTE_URL));
+
+                // Open Graph
+                $openGraph->setTitle($seoTags->getTitle());
+                $openGraph->setDescription($seoTags->getDescription());
+                $openGraph->setUrl($seoTags->getCanonicalUrl());
+            }
+
+            return $seoTags;
+        }
+
+        // Handle entity
+        else {
+            if(!$entityOrRequest instanceof SeoInterface || !in_array(Seoable::class, class_uses($entityOrRequest))) {
+                throw new MissingSeoInterfaceException('Given entity must implement SeoInterface class and use Seoable');
+            }
+
+            // Init objects
+            $openGraph = $entityOrRequest->getOpenGraphData();
+
+            // Tweak image URL to add scheme and host if necessary
+            if(strpos($openGraph->getImage(), '/') === 0) {
+                $openGraph->setImage($this->schemeAndHttpHost . $openGraph->getImage());
+            }
+
+            // Add route
+            $openGraph->setUrl($this->getUrl($entityOrRequest));
+
+            $seoTags = new SeoTags();
+            $seoTags->setOpenGraph($openGraph);
+            $seoTags->setEntity($entityOrRequest);
+            $seoTags->setCanonicalUrl($openGraph->getUrl());
+
+            $seoTags->setTitle($entityOrRequest->getSeoTitle());
+            $seoTags->setDescription($entityOrRequest->getSeoDescription());
+        }
+
+        // Send event to generate tags
+        $generateEvent = new GenerateSeoTagsEvent($seoTags);
+        $this->eventDispatcher->dispatch(
+            LchSeoBundleEvents::RENDER_SEO_TAGS,
+            $generateEvent
+        );
+
+        return $generateEvent->getSeoTags();
+    }
+
+    /**
+     * @param SeoInterface $entityInstance
+     * @return string
+     */
+    public function getUrl(SeoInterface $entityInstance) {
+        foreach($entityInstance->getRouteFields() as $routeParameter => $entityParameter) {
+            $routeParameters[$routeParameter] = $this->propertyAccessor->getValue($entityInstance, $entityParameter);
+        }
+        return $this->router->generate($entityInstance->getRouteName(), $routeParameters, Router::ABSOLUTE_URL);
+    }
+
+    /**
      * @return \SimpleXMLElement
      */
     public function generateSitemap()
@@ -202,10 +284,8 @@ class Tools
             foreach($entities as $entityInstance) {
                 if(!in_array($entityInstance->getId(), $data[Configuration::ENTITIES_EXCLUDE])) {
                     $routeParameters = [];
-                    foreach($entityInstance->getRouteFields() as $routeParameter => $entityParameter) {
-                        $routeParameters[$routeParameter] = $this->propertyAccessor->getValue($entityInstance, $entityParameter);
-                    }
-                    $url = $this->router->generate($entityInstance->getRouteName(), $routeParameters, Router::ABSOLUTE_URL);
+
+                    $url = $this->getUrl($entityInstance);
 
                     $urlNode = $urlSet->addChild('url');
                     $urlNode->addChild(Configuration::LOC, $url);

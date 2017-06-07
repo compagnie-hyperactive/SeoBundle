@@ -25,6 +25,11 @@ class Configuration implements ConfigurationInterface
 
     const ENTITIES = 'entities';
     const ENTITIES_EXCLUDE = 'exclude';
+
+    const TAGS = 'tags';
+    const TITLE = 'title';
+    const DESCRIPTION = 'description';
+    
     /**
      * {@inheritdoc}
      */
@@ -39,6 +44,14 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode(static::SPECIFIC)
                     ->prototype('array')
                         ->children()
+                            ->arrayNode(static::TAGS)
+                                ->children()
+                                    ->scalarNode(static::TITLE)
+                                    ->end()
+                                    ->scalarNode(static::DESCRIPTION)
+                                    ->end()
+                                ->end()
+                            ->end()
                             ->arrayNode(static::SITEMAP)
                                 ->children()
                                     ->scalarNode(static::LOC)
