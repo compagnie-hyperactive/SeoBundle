@@ -240,13 +240,15 @@ class Tools
 
     /**
      * @param SeoInterface $entityInstance
+     * @param string $routeType
      * @return string
      */
-    public function getUrl(SeoInterface $entityInstance) {
+    public function getUrl(SeoInterface $entityInstance, string $routeType = Router::ABSOLUTE_URL) {
+        $routeParameters = [];
         foreach($entityInstance->getRouteFields() as $routeParameter => $entityParameter) {
             $routeParameters[$routeParameter] = $this->propertyAccessor->getValue($entityInstance, $entityParameter);
         }
-        return $this->router->generate($entityInstance->getRouteName(), $routeParameters, Router::ABSOLUTE_URL);
+        return $this->router->generate($entityInstance->getRouteName(), $routeParameters, $routeType);
     }
 
     /**
@@ -290,7 +292,7 @@ class Tools
 
                     $urlNode = $urlSet->addChild('url');
                     $urlNode->addChild(Configuration::LOC, $url);
-                    $urlNode->addChild(Configuration::PRIORITY, $this->priorityCalculation($this->router->generate($entityInstance->getRouteName(), $routeParameters, Router::RELATIVE_PATH)));
+                    $urlNode->addChild(Configuration::PRIORITY, $this->priorityCalculation($this->getUrl($entityInstance, Router::RELATIVE_PATH)));
                 }
             }
         }
