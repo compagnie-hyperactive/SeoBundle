@@ -180,6 +180,7 @@ class Tools
         if($entityOrRequest instanceof Request) {
             $openGraph = new OpenGraph();
             $seoTags = new SeoTags();
+            $seoTags->setRequest($entityOrRequest);
             $seoTags->setOpenGraph($openGraph);
 
             // Check if specific entry in config.yml yml match current route

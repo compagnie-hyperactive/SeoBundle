@@ -9,6 +9,8 @@
 namespace Lch\SeoBundle\Model;
 
 
+use Symfony\Component\HttpFoundation\Request;
+
 class SeoTags
 {
     /**
@@ -44,9 +46,31 @@ class SeoTags
      */
     private $entity;
     /**
+     * @var Request
+     */
+    private $request;
+    /**
      * @var string
      */
     private $route;
+
+    /**
+     * @return Request
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
+    /**
+     * @param Request $request
+     * @return SeoTags
+     */
+    public function setRequest($request)
+    {
+        $this->request = $request;
+        return $this;
+    }
 
     /**
      * @return string
