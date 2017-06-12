@@ -14,13 +14,13 @@ trait Seoable {
     /**
      * @var string
      *
-     * @ORM\Column(name="seo_slug", type="string", length=60, nullable=true, unique=true)
+     * @ORM\Column(name="seo_slug", type="string", length=128, nullable=true, unique=true)
      */
     private $slug;
     /**
      * @var string
      *
-     * @ORM\Column(name="seo_title", type="string", length=60, nullable=true)
+     * @ORM\Column(name="seo_title", type="string", length=128, nullable=true)
      * @Assert\Length(
      *      min = 1,
      *      max = 55,
