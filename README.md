@@ -196,11 +196,12 @@ Then, override this block on each page you want to display SEO information, with
         {{ renderSeoTags(app.request) }}
     {% endblock seo %}
 ```
+_Note: `app.request` needs to be setting up here to generate SEO according to current route defined in `config.yml`_
 
 - Entity pages :
 ```twig
     {% block seo %}
-        {{ renderSeoTags(solution) }}
+        {{ renderSeoTags(entity) }}
     {% endblock seo %}
 ```
 
