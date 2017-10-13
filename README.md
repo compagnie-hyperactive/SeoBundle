@@ -1,28 +1,65 @@
 # SEOBundle
 
-This bundle add SEO capabilities for entities in any SF3 project. So far it handles
+This bundle add SEO capabilities for entities in any SF3 project. So far it handles:
 - SEO meta (title, desc, slug with URL rewrite)
 - Minimal OpenGraph implementation
 - Canonical URL
 
-## Installation
-Simply do a `composer require lch/seo-bundle`
-## Configuration
+## Installation using [composer](https://getcomposer.org/)
+`$ composer require lch/seo-bundle`
+## Configuration and usage
 
-1. [Entities preparations](#entities-preparation)
-2. [Form type usage](#form-type-usage)
+1. [Configuration](#configuration)
+2. [Entities preparations](#entities-preparation)
+3. [Form type usage](#form-type-usage)
+4. [Front rendering](#front-rendering)
+
+### Configuration
+
+SeoBundle allows to generate minimal SEO requirements for specific pages (like homepage) or 'entity' pages (like news page).
+SEO for 'entity' pages is automatically generated. For specifics pages, follow these steps:
+
+```yml
+# app/config/config.yml
+
+lch_seo:
+    specific:
+        route_name:
+            tags:
+                title: Page title               # Title of the current page
+                description: Page description   # Desctiption (meta) of the current page
+            sitemap:
+                loc: /                          # URL of page
+                priority: 1.0                   # Priority
+        other_route_name:
+            ...
+```
 
 ### Entities preparation
 
-2 steps here :
-#### Seoable
+
+To automatically generate SEO for 'entity' pages, follow theses 2 steps:
+#### Seoable trait
 
 Add `Seoable` to any entity you want to have SEO settings on. This include
  - seoTitle
  - seoDescription
  - slug field 
+ 
+ ```php
+     use Lch\SeoBundle\Behaviour\Seoable;
+     use Lch\SeoBundle\Model\SeoInterface;
+    
+     class MyEntity implements SeoInterface
+     {
+     
+         use Seoable;
+         
+         ...
+ ```
+ 
 
-#### SeoInterface
+#### SeoInterface implementation
 
 Implements `SeoInterface` and fill 5 methods
 
@@ -31,7 +68,8 @@ Implements `SeoInterface` and fill 5 methods
     /**
      * @inheritdoc
      */
-    public function getSluggableFields() {
+    public function getSluggableFields()
+    {
         // This assume your entity have a field 'title'
         return [
             'title'
@@ -115,35 +153,58 @@ We assume that a unique constraint/index is set on slug field, or slug fields co
 The bundle provides an SeoType, you can add to entities implementing SeoInterface types
 
 ```php
- /**
-        * {@inheritdoc}
-        */
-        public function buildForm(FormBuilderInterface $builder, array $options)
-        {
-            $builder
-                ->add('title', TextType::class, [
-                    'label' => static::ROOT_TRANSLATION_PATH . '.title.label',
-                    'attr'  => [
-                        'helper' => static::ROOT_TRANSLATION_PATH . '.title.helper',
-                    ]
-                ])
+use Lch\SeoBundle\Form\SeoType;
 
-                // ...
+/**
+ * {@inheritdoc}
+ */
+public function buildForm(FormBuilderInterface $builder, array $options)
+{
+    $builder
 
-                ->add('seo', SeoType::class, array(
-                    'label' => 'lch.seo.form.label',
-                    'required' => false,
-                    'attr' => [
-                        'no_label' => true,
-                        'force_two_columns_presentation' => true
-                    ]
-                ))
-            ;
-        }
+        // ...
+
+        ->add('seo', SeoType::class, array(
+            'label' => 'lch.seo.form.label',
+            'required' => false,
+            'attr' => [
+                'no_label' => true,
+                'force_two_columns_presentation' => true
+            ]
+        ))
+    ;
+}
 ```
 _Note: `attr` used are detailled with [AdminBundle](https://github.com/compagnie-hyperactive/AdminBundle)_
 
-Then, in the form twigs, add SEO form theme : `LchSeoBundle:form:fields.html.twig` to ensure fields rendering and logic.
+Then, in the form twigs, add SEO form theme : `{{ form_row(form.seo) }}` to ensure fields rendering and logic.
+
+### Front rendering
+
+Simply add a seo block in your `base.html.twig` in `<head>` section
+
+```twig
+    {% block seo %}{% endblock seo %}
+```
+
+Then, override this block on each page you want to display SEO information, with a custom Twig function:
+
+- Specific pages :
+
+```twig
+    {% block seo %}
+        {{ renderSeoTags(app.request) }}
+    {% endblock seo %}
+```
+_Note: `app.request` needs to be setting up here to generate SEO according to current route defined in `config.yml`_
+
+- Entity pages :
+```twig
+    {% block seo %}
+        {{ renderSeoTags(entity) }}
+    {% endblock seo %}
+```
+
 
 
 ### Persistence
