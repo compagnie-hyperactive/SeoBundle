@@ -7,10 +7,20 @@ $(document).ready(function() {
     var $slugField =    $("input[name$='[slug]']");
     var $slugGenerateButton = $("#generateSlug");
 
+    var fields = JSON.parse($slugGenerateButton.attr('data-fields'));
+
+    /**
+     * Check if required field for slug is in DOM, to display slug 'generation' button
+     */
+    for(i in fields) {
+        if ($("input[name$='[" + fields[i] + "]']").length == 0) {
+            $slugGenerateButton.addClass("hidden");
+        }
+    }
+
     // On generate button click
     $slugGenerateButton.click(function() {
         // Check required fields for slug are set
-        var fields = JSON.parse($slugGenerateButton.attr('data-fields'));
         var fieldsValues = {};
 
         for(i in fields) {

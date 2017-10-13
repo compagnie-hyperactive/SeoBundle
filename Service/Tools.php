@@ -126,7 +126,8 @@ class Tools
     /**
      * @param $entity
      */
-    public function seoFilling($entity) {
+    public function seoFilling($entity)
+    {
         // TODO check Seoable recursively and check SeoInterface implementation
         if(!in_array(Seoable::class, class_uses($entity))) {
             throw new Exception();
