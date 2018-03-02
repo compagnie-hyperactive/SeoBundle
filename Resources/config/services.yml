@@ -19,10 +19,15 @@ services:
 
     lch.seo.doctrine.listener:
         class: "%lch.seo.doctrine.seo_listener.class%"
-        arguments: ['@service_container']
+        arguments: ['@lch.seo.reflection.class_analyzer']
         tags:
             - { name: doctrine.event_subscriber }
         lazy: true
+        calls:
+          - method: setTools
+            arguments:
+                - '@lch.seo.tools'
+
 
     lch.seo.reflection.class_analyzer:
         class:   "%lch.seo.reflection.class_analyser.class%"

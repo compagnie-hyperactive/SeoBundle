@@ -5,14 +5,32 @@ namespace Lch\SeoBundle\Doctrine;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Lch\SeoBundle\Behaviour\Seoable;
+use Lch\SeoBundle\Reflection\ClassAnalyzer;
+use Lch\SeoBundle\Service\Tools;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class SeoListener implements EventSubscriber
 {
+	/**
+	 * @var Tools
+	 */
+	private $tools;
 
-    public function __construct(ContainerInterface $container)
+	/**
+	 * @var ClassAnalyzer
+	 */
+	private $classAnalyzer;
+
+    public function __construct( ClassAnalyzer $classAnalyzer)
     {
-        $this->container = $container;
+        $this->classAnalyzer = $classAnalyzer;
+    }
+
+	/**
+	 * @param Tools $tools
+	 */
+    public function setTools(Tools $tools) {
+    	$this->tools = $tools;
     }
 
     /**
@@ -50,15 +68,11 @@ class SeoListener implements EventSubscriber
         $entity = $args->getEntity();
         $classMetadata = new \ReflectionClass($entity);
 
-        $classAnalyser = $this->container->get('lch.seo.reflection.class_analyzer');
-
-        if (!$classAnalyser->hasTrait($classMetadata, Seoable::class, true)){
+        if (!$this->classAnalyzer->hasTrait($classMetadata, Seoable::class, true)){
             return;
         }
 
-        $tools = $this->container->get('lch.seo.tools');
-
-        $tools->seoFilling($entity);
+        $this->tools->seoFilling($entity);
 
         $em = $args->getEntityManager();
         $em->flush();
