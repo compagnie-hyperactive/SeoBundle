@@ -1,19 +1,23 @@
 <?php
-namespace Lch\SeoBundle\Behaviour;
-
-use Knp\DoctrineBehaviors\Model as ORMBehaviors;
-use Symfony\Component\Validator\Constraints as Assert;
-
 /**
  * Created by PhpStorm.
  * User: nicolas
  * Date: 13/01/16
  * Time: 17:53
  */
+
+namespace Lch\SeoBundle\Behaviour;
+
+use Knp\DoctrineBehaviors\Model as ORMBehaviors;
+use Symfony\Component\Validator\Constraints as Assert;
+
+/**
+ * Trait Seoable
+ * @package Lch\SeoBundle\Behaviour
+ */
 trait Seoable {
     /**
      * @var string
-     *
      * @ORM\Column(name="seo_slug", type="string", length=128, nullable=true, unique=true)
      */
     private $slug;
