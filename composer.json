@@ -14,8 +14,7 @@
     "require": {
         "php": "^7.0",
         "symfony/framework-bundle": "^3.4",
-        "knplabs/doctrine-behaviors": "~1.1",
-        "friendsofsymfony/jsrouting-bundle": "^1.6"
+        "knplabs/doctrine-behaviors": "~1.1"
     },
     "require-dev": {
         "doctrine/doctrine-bundle": "^1.3",
