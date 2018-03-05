@@ -147,6 +147,28 @@ Implements `SeoInterface` and fill 5 methods
  
 We assume that a unique constraint/index is set on slug field, or slug fields collection if more than one.
  
+ 
+In addition, ton ensure proper form validation, be sure to add `@UniqueEntity` constraint, at least on `slug` field :
+
+ ```php
+     use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+    
+     /**
+      * Class MyEntity
+      * @package App\Entity\MyEntity
+      *
+      * @ORM\Table
+      * @ORM\Entity
+      * @UniqueEntity("slug")
+      */
+     class MyEntity implements SeoInterface
+     {
+     
+         use Seoable;
+         
+         ...
+ ```
+
 ### Form type usage
 
 #### SeoType
