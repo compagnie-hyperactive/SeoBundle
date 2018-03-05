@@ -50,41 +50,40 @@
 
 {% block lch_slug_type_widget %}
     {% spaceless %}
-		<div class="col-xs-12 no-gutter">
-			<div class="col-xs-8 widget">
-                {{ form_widget(form.slug) }}
-				<p class="col-xs-12 helper">
-					<i class="glyphicon glyphicon-question-sign"></i>
-                    {% if(form.parent.vars.value.id != "") %}
-                        {% set fields = [] %}
-                        {% for routefield, entityField in form.parent.vars.value.getRouteFields %}
-                            {% set fields = fields|merge({ (routefield) : attribute(form.parent.vars.value, entityField)|default((routefield))}) %}
-                        {% endfor %}
-						<span>{{ 'lch.seo.form.url.example'|trans({'%url%': url(form.vars.value.getRouteName, fields)})|raw }}</span>
-						<span>&nbsp;&nbsp;&nbsp;</span>
-						<a href="{{ path(form.vars.value.getRouteName, fields) }}"
-						   target="_blank">{{ 'lch.seo.form.url.see'|trans }}</a>
-                    {% else %}
-                        {{ 'lch.seo.form.url.example'|trans({'%url%': url(form.vars.value.getRouteName, form.parent.vars.value.getRouteFields)})|raw }}
-                    {% endif %}
-				</p>
-				<div class="col-xs-12 errors alert alert-danger">
-					<p class="hidden"><span class="glyphicon glyphicon-exclamation-sign"></span><span
-								class="text"></span></p>
-				</div>
-			</div>
-			<div class="col-xs-2">
-				<a class="btn btn-default"
-				   role="button"
-				   id="generateSlug"
-				   data-fields='{{ form.parent.vars.value.getSluggableFields|json_encode }}'
-				   data-entity="{{ getEntityClass(form.parent.vars.value) }}"
-				   data-route="{{ form.vars.value.getRouteName }}"
-				>
-					<i class="glyphicon glyphicon-repeat"></i>
-                    {{ 'lch.seo.form.url.generate'|trans }}
-				</a>
-			</div>
+		<div id="seo-slug" class="col-xs-8 widget no-gutters">
+			{{ form_widget(form.slug) }}
+			<p class="col-xs-12 helper">
+				<i class="glyphicon glyphicon-question-sign"></i>
+				{% if(form.parent.vars.value.id != "") %}
+					{% set fields = [] %}
+					{% for routefield, entityField in form.parent.vars.value.getRouteFields %}
+						{% set fields = fields|merge({ (routefield) : attribute(form.parent.vars.value, entityField)|default((routefield))}) %}
+					{% endfor %}
+					<span>{{ 'lch.seo.form.url.example'|trans({'%url%': url(form.vars.value.getRouteName, fields)})|raw }}</span>
+					<span>&nbsp;&nbsp;&nbsp;</span>
+					<a href="{{ path(form.vars.value.getRouteName, fields) }}"
+					   target="_blank">{{ 'lch.seo.form.url.see'|trans }}</a>
+				{% else %}
+					{{ 'lch.seo.form.url.example'|trans({'%url%': url(form.vars.value.getRouteName, form.parent.vars.value.getRouteFields)})|raw }}
+				{% endif %}
+			</p>
+            {{ form_errors(form.slug) }}
+			{#<div class="error-block hidden"><span class="label label-danger">Erreur</span>#}
+				{#<span>Cette valeur est déjà utilisée.</span>#}
+			{#</div>#}
+		</div>
+		<div class="col-xs-2">
+			<a class="btn btn-default"
+			   role="button"
+			   id="generateSlug"
+			   data-fields='{{ form.parent.vars.value.getSluggableFields|json_encode }}'
+			   data-entity="{{ getEntityClass(form.parent.vars.value) }}"
+			   data-route="{{ form.vars.value.getRouteName }}"
+			   data-route-generation-path="{{ path('lch_seo_generate_slug') }}"
+			>
+				<i class="glyphicon glyphicon-repeat"></i>
+				{{ 'lch.seo.form.url.generate'|trans }}
+			</a>
 		</div>
     {% endspaceless %}
 {% endblock %}

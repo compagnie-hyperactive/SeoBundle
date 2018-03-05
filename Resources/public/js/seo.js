@@ -4,7 +4,7 @@ $(document).ready(function() {
      *   Slug generator call in AJAX
      */
 
-    var $slugField =    $("input[name$='[slug]']");
+    var $slugField =    $("#seo-slug input[name$='[slug]']");
     var $slugGenerateButton = $("#generateSlug");
 
     var fields = JSON.parse($slugGenerateButton.attr('data-fields'));
@@ -18,6 +18,7 @@ $(document).ready(function() {
         }
     }
 
+    
     // On generate button click
     $slugGenerateButton.click(function() {
         // Check required fields for slug are set
@@ -32,21 +33,22 @@ $(document).ready(function() {
             }
         }
 
+        $("#seo-slug .error-block").addClass('hidden');
+
         var data = {};
         data['fields'] = fieldsValues;
         data['entityClass'] = $(this).attr('data-entity');
 
-        $("div.errors p").addClass('hidden');
         $.ajax({
-            url:  Routing.generate('lch_seo_generate_slug'),
+            url:  $slugGenerateButton.attr('data-route-generation-path'),
             data : data,
             method : 'POST',
             success: function(result) {
                 if(result.success){
                     $slugField.val(result.slug);
                 } else {
-                    $("div.errors p span.text").html(result.message);
-                    $("div.errors p").removeClass('hidden');
+                    $("#seo-slug .error-block span").html(result.message);
+                    $("#seo-slug .error-block").removeClass('hidden');
                 }
             }
         });
