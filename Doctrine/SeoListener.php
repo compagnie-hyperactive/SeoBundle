@@ -3,10 +3,12 @@
 namespace Lch\SeoBundle\Doctrine;
 
 use Doctrine\Common\EventSubscriber;
+use Doctrine\ORM\Events;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Lch\SeoBundle\Behaviour\Seoable;
 use Lch\SeoBundle\Reflection\ClassAnalyzer;
 use Lch\SeoBundle\Service\Tools;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class SeoListener implements EventSubscriber
@@ -38,16 +40,16 @@ class SeoListener implements EventSubscriber
      */
     public function getSubscribedEvents()
     {
-        return array(
-            'postPersist',
-            'postUpdate',
-        );
+        return [
+            Events::prePersist,
+            Events::preUpdate
+        ];
     }
 
     /**
      * @param LifecycleEventArgs $args
      */
-    public function postPersist(LifecycleEventArgs $args)
+    public function prePersist(LifecycleEventArgs $args)
     {
         $this->fillSeoEntity($args);
     }
@@ -55,7 +57,7 @@ class SeoListener implements EventSubscriber
     /**
      * @param LifecycleEventArgs $args
      */
-    public function postUpdate(LifecycleEventArgs $args)
+    public function preUpdate(LifecycleEventArgs $args)
     {
         $this->fillSeoEntity($args);
     }
@@ -73,8 +75,5 @@ class SeoListener implements EventSubscriber
         }
 
         $this->tools->seoFilling($entity);
-
-        $em = $args->getEntityManager();
-        $em->flush();
     }
 }
