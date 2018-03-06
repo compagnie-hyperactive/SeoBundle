@@ -26,7 +26,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class Tools {
-	const DEFAULT_DELIMITER = static::DEFAULT_DELIMITER;
+	const DEFAULT_DELIMITER = '-';
 	/**
 	 * @var EntityManager
 	 */
