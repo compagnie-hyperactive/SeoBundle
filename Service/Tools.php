@@ -26,7 +26,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class Tools {
-	const DEFAULT_DELIMITER = '-';
+	const DEFAULT_DELIMITER = static::DEFAULT_DELIMITER;
 	/**
 	 * @var EntityManager
 	 */
@@ -157,9 +157,21 @@ class Tools {
 			$entity->setSlug( $this->generateSlug( get_class( $entity ), $fields ) );
 		}
 
-		if ( ! $this->isSlugUnique( $entity, $entity->getSlug() ) ) {
-			$entity->setSlug( "{$entity->getSlug()}-2" );
+		$currentSlug = $entity->getSlug();
+
+		// Recursive slug check with suffix addition
+		while ( ! $this->isSlugUnique( $entity, $currentSlug ) ) {
+			$currentSlugParts = explode(static::DEFAULT_DELIMITER, $currentSlug);
+			if(intval($number = $currentSlugParts[count($currentSlugParts)-1])) {
+				array_pop($currentSlugParts);
+				$number++;
+				$currentSlug = implode(static::DEFAULT_DELIMITER, $currentSlugParts) . static::DEFAULT_DELIMITER . "{$number}";
+			}
+			else {
+				$currentSlug = "{$currentSlug}-2";
+			}
 		}
+		$entity->setSlug($currentSlug);
 	}
 
 	/**
