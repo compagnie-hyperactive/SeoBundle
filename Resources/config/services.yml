@@ -1,36 +1,33 @@
 parameters:
-  lch.seo.tools.class: Lch\SeoBundle\Service\Tools
-  lch.seo.twig.extension.class: Lch\SeoBundle\Twig\SeoExtension
-  lch.seo.seo_listener.class: Lch\SeoBundle\Doctrine\SeoListener
-  lch.seo.reflection.class_analyser.class: Lch\SeoBundle\Reflection\ClassAnalyzer
+    lch.seo.tools.class: Lch\SeoBundle\Service\Tools
+    lch.seo.twig.extension.class: Lch\SeoBundle\Twig\SeoExtension
+    lch.seo.doctrine.seo_listener.class: Lch\SeoBundle\Doctrine\SeoListener
+    lch.seo.reflection.class_analyser.class: Lch\SeoBundle\Reflection\ClassAnalyzer
 
 services:
-  lch.seo.twig.extension:
-    class: "%lch.seo.twig.extension.class%"
-    arguments: ['@twig', '@lch.seo.tools']
-    tags:
-      - { name: twig.extension }
-    lazy: true
+    lch.seo.twig.extension:
+        class: "%lch.seo.twig.extension.class%"
+        arguments: ['@twig', '@lch.seo.tools']
+        tags:
+            - { name: twig.extension }
+        lazy: true
 
-  lch.seo.tools:
-    class: "%lch.seo.tools.class%"
-    arguments: ['@doctrine.orm.entity_manager', '@event_dispatcher', '@router', '%lch.seo.parameters%']
-    public: true
-    lazy: true
-  #        bind:
-  #            $sitemapParameters: '%lch.seo.parameters%'
+    lch.seo.tools:
+        class: "%lch.seo.tools.class%"
+        arguments: ['@doctrine.orm.entity_manager', '@event_dispatcher', '@router', '%lch.seo.parameters%']
+        lazy: true
 
-  lch.seo.listener:
-    class: "%lch.seo.seo_listener.class%"
-    arguments: ['@lch.seo.reflection.class_analyzer']
-    tags:
-      - { name: kernel.event_subscriber }
-    lazy: true
-    calls:
-      - method: setSeoTools
-        arguments:
-          - '@lch.seo.tools'
+    lch.seo.doctrine.listener:
+        class: "%lch.seo.doctrine.seo_listener.class%"
+        arguments: ['@lch.seo.reflection.class_analyzer']
+        tags:
+            - { name: doctrine.event_subscriber }
+        lazy: true
+        calls:
+          - method: setTools
+            arguments:
+                - '@lch.seo.tools'
 
 
-  lch.seo.reflection.class_analyzer:
-    class:   "%lch.seo.reflection.class_analyser.class%"
+    lch.seo.reflection.class_analyzer:
+        class:   "%lch.seo.reflection.class_analyser.class%"

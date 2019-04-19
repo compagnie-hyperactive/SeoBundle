@@ -2,30 +2,28 @@
 
 namespace Lch\SeoBundle\Doctrine;
 
+use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Event\LifecycleEventArgs;
-use EasyCorp\Bundle\EasyAdminBundle\Event\EasyAdminEvents;
 use Lch\SeoBundle\Behaviour\Seoable;
 use Lch\SeoBundle\Reflection\ClassAnalyzer;
 use Lch\SeoBundle\Service\Tools;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\EventDispatcher\GenericEvent;
 
-class SeoListener implements EventSubscriberInterface
+class SeoListener implements EventSubscriber
 {
 	/**
 	 * @var Tools
 	 */
-	private $seoTools;
+	private $tools;
 
 	/**
 	 * @var ClassAnalyzer
 	 */
 	private $classAnalyzer;
 
-    public function __construct(ClassAnalyzer $classAnalyzer)
+    public function __construct( ClassAnalyzer $classAnalyzer)
     {
         $this->classAnalyzer = $classAnalyzer;
     }
@@ -33,54 +31,49 @@ class SeoListener implements EventSubscriberInterface
 	/**
 	 * @param Tools $tools
 	 */
-    public function setSeoTools(Tools $seoTools) {
-    	$this->seoTools = $seoTools;
+    public function setTools(Tools $tools) {
+    	$this->tools = $tools;
     }
 
     /**
      * {@inheritdoc}
      */
-    public static function getSubscribedEvents()
+    public function getSubscribedEvents()
     {
         return [
-//            Events::prePersist,
-//            Events::preUpdate
-            EasyAdminEvents::PRE_UPDATE => 'onPreUpdate',
-            EasyAdminEvents::PRE_PERSIST => 'onPrePersist',
+            Events::prePersist,
+            Events::preUpdate
         ];
     }
 
     /**
      * @param LifecycleEventArgs $args
      */
-    public function onPrePersist(GenericEvent $event)
+    public function prePersist(LifecycleEventArgs $args)
     {
-        $this->fillSeoEntity($event);
+        $this->fillSeoEntity($args);
     }
 
     /**
      * @param LifecycleEventArgs $args
      */
-    public function onPreUpdate(GenericEvent $event)
+    public function preUpdate(LifecycleEventArgs $args)
     {
-        $this->fillSeoEntity($event);
+        $this->fillSeoEntity($args);
     }
-
-
 
     /**
      * @param LifecycleEventArgs $args
      */
-    private function fillSeoEntity(GenericEvent $args)
+    private function fillSeoEntity(LifecycleEventArgs $args)
     {
-        $entity = $args->getSubject();
+        $entity = $args->getEntity();
         $classMetadata = new \ReflectionClass($entity);
-        
 
         if (!$this->classAnalyzer->hasTrait($classMetadata, Seoable::class, true)){
             return;
         }
 
-        $this->seoTools->seoFilling($entity);
+        $this->tools->seoFilling($entity);
     }
 }

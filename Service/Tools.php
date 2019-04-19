@@ -10,7 +10,6 @@ namespace Lch\SeoBundle\Service;
 
 
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
 use Lch\SeoBundle\Behaviour\Seoable;
 use Lch\SeoBundle\DependencyInjection\Configuration;
 use Lch\SeoBundle\Event\GenerateSeoTagsEvent;
@@ -25,7 +24,6 @@ use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyAccess\PropertyAccess;
-use Symfony\Component\Routing\RouterInterface;
 
 class Tools {
 	const DEFAULT_DELIMITER = '-';
@@ -65,7 +63,7 @@ class Tools {
 	 * @param Router $router
 	 * @param array $sitemapParameters
 	 */
-	public function __construct( EntityManagerInterface $entityManager, EventDispatcherInterface $eventDispatcher, RouterInterface $router, array $sitemapParameters ) {
+	public function __construct( EntityManager $entityManager, EventDispatcherInterface $eventDispatcher, Router $router, array $sitemapParameters ) {
 		$this->entityManager     = $entityManager;
 		$this->eventDispatcher   = $eventDispatcher;
 		$this->router            = $router;
