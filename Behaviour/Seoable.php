@@ -20,7 +20,7 @@ trait Seoable {
      * @var string
      * @ORM\Column(name="seo_slug", type="string", length=128, nullable=true, unique=true)
      */
-    private $slug;
+    protected $slug;
     /**
      * @var string
      *
@@ -32,7 +32,7 @@ trait Seoable {
      *      maxMessage = "lch.seo.validations.seoTitle.maxLenth ( {{limit}} )", payload = {"severity" = "warning"} )
      * )
      */
-    private $seoTitle;
+    protected $seoTitle;
     /**
      * @var string
      *
@@ -44,7 +44,7 @@ trait Seoable {
      *      maxMessage = "lch.seo.validations.seoDescription.maxLenth ( {{limit}} )", payload = {"severity" = "warning"}  )
      * )
      */
-    private $seoDescription;
+    protected $seoDescription;
 
     /**
      * @return string
