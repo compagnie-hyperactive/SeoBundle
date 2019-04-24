@@ -137,10 +137,11 @@ class Tools {
 	 * @param $entity
 	 */
 	public function seoFilling( $entity ) {
-		// TODO check Seoable recursively and check SeoInterface implementation
-		if ( ! in_array( Seoable::class, class_uses( $entity ) ) ) {
-			throw new Exception();
-		}
+        // TODO check Seoable recursively
+        if ( ! in_array( Seoable::class, class_uses( $entity ) )
+            && ! $entity instanceof SeoInterface ) {
+            throw new Exception();
+        }
 
 		// Fill title
 		if ( empty( $entity->getSeoTitle() ) ) {
