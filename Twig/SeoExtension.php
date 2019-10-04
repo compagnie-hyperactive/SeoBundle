@@ -32,10 +32,10 @@ class SeoExtension extends \Twig_Extension
     public function getFunctions()
     {
         return array(
-            new \Twig_SimpleFunction('getEntityClass', [$this, 'getEntityClass' ], [
+            new \Twig_SimpleFunction('get_entity_class', [$this, 'getEntityClass' ], [
                 'needs_environment' => false,
             ]),
-            new \Twig_SimpleFunction('renderSeoTags', [$this, 'renderSeoTags' ], [
+            new \Twig_SimpleFunction('render_seo_tags', [$this, 'renderSeoTags' ], [
                 'needs_environment' => false,
                 'is_safe' => array('html')
             ]),

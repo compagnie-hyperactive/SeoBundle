@@ -14,7 +14,8 @@ services:
 
     lch.seo.tools:
         class: "%lch.seo.tools.class%"
-        arguments: ['@doctrine.orm.entity_manager', '@event_dispatcher', '@router', '%lch.seo.parameters%']
+        arguments: ['@doctrine.orm.entity_manager', '@event_dispatcher', '@router', '@lch.translate.lang_switch_helper', '%lch.seo.parameters%']
+        public: true
         lazy: true
 
     lch.seo.doctrine.listener:

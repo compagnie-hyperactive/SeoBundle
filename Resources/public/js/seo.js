@@ -4,7 +4,7 @@ $(document).ready(function() {
      *   Slug generator call in AJAX
      */
 
-    var $slugField =    $("#seo-slug input[name$='[slug]']");
+    var $slugField =    $("input#page_seo_slug");
     var $slugGenerateButton = $("#generateSlug");
 
     if($slugGenerateButton.length === 1) {

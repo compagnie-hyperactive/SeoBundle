@@ -46,7 +46,7 @@ class SeoType extends AbstractType
                 'label' => 'lch.seo.form.url.name',
                 'block_name' => 'slug',
                 'attr' => [
-                    'helper' => 'lch.seo.form.description.helper',
+                    'helper' => 'lch.seo.form.url.helper',
                 ]
             ))
         ;
