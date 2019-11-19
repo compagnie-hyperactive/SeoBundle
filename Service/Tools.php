@@ -226,10 +226,11 @@ class Tools
     public function generateTags($entityOrRequest)
     {
 
+        $openGraph = new OpenGraph();
+        $seoTags   = new SeoTags();
+
         // Handle request, for specific pages not linked to entities
         if ($entityOrRequest instanceof Request) {
-            $openGraph = new OpenGraph();
-            $seoTags   = new SeoTags();
             $seoTags->setRequest($entityOrRequest);
             $seoTags->setOpenGraph($openGraph);
 
@@ -266,6 +267,10 @@ class Tools
                 $openGraph->setImage($this->schemeAndHttpHost . $openGraph->getImage());
             }
 
+            $seoTags->setTitle($entityOrRequest->getSeoTitle());
+            $seoTags->setDescription($entityOrRequest->getSeoDescription());
+            $seoTags->setRoute($entityOrRequest->getRouteName());
+
             // Add route
             $openGraph->setUrl($this->getUrl($entityOrRequest));
 
@@ -297,7 +302,7 @@ class Tools
     public function getUrl(SeoInterface $entityInstance, string $routeType = Router::ABSOLUTE_URL)
     {
         if(!$entityInstance instanceof TranslatableInterface) {
-            throw new MissingTranslatableInterfaceException('The entity' . get_class($entityInstance) . 'must implement Translatable trait');
+            throw new MissingTranslatableInterfaceException('The entity ' . get_class($entityInstance) . ' must implement Translatable trait');
         }
         $routeParameters = [];
         foreach ($entityInstance->getRouteFields() as $routeParameter => $entityParameter) {
