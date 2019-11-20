@@ -14,24 +14,24 @@ use Symfony\Component\EventDispatcher\Event;
 class GenerateSlugEvent extends Event
 {
     /**
-     * @var string
+     * @var string $entityClass
      */
-    private $entityClass;
+    protected $entityClass;
     /**
      * @var int the highest entity ID for slug generation
      */
-    private $higestEntityId;
+    protected $higestEntityId;
 
 
     /**
      * @var array
      */
-    private $fields;
+    protected $fields;
 
     /**
      * @var string
      */
-    private $slug;
+    protected $slug;
 
     /**
      * GenerateSlugEvent constructor.

@@ -11,6 +11,7 @@ namespace Lch\SeoBundle;
 
 final class LchSeoBundleEvents
 {
-    const GENERATE_SLUG     = "lch.seo.generate.slug";
-    const RENDER_SEO_TAGS   = "lch.seo.render.tags";
+    const GENERATE_SLUG = "lch.seo.generate.slug.event";
+    const RENDER_SEO_TAGS = "lch.seo.render.tags.event";
+    const GET_ENTITIES_CRITERIAS = "lch.seo.render.tags";
 }

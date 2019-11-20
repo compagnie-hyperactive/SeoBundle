@@ -20,7 +20,7 @@ class SeoController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function generateSlugAction(Request $request) {
+    public function generateSlug(Request $request) {
 
         $response = new JsonResponse();
         if(!$request->isXmlHttpRequest()) {

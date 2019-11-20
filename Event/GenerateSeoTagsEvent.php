@@ -17,7 +17,7 @@ class GenerateSeoTagsEvent extends Event
     /**
      * @var SeoTags
      */
-    private $seoTags;
+    protected $seoTags;
     /**
      * GenerateSeoTagsEvent constructor.
      * @param SeoTags $seoTags

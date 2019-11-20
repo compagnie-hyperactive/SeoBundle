@@ -10,12 +10,17 @@ namespace Lch\SeoBundle\Controller;
 
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class SitemapController extends Controller
 {
 
-    public function generateSitemapAction() {
-        return new Response($this->get('lch.seo.tools')->generateSitemap()->asXML());
+    public function generateSitemap(Request $request) {
+        return new Response(
+            $this->get('lch.seo.tools')
+                 ->generateSitemap($request)
+                 ->asXML()
+        );
     }
 }

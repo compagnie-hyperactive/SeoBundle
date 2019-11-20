@@ -14,6 +14,7 @@ use Lch\SeoBundle\Behaviour\Seoable;
 use Lch\SeoBundle\DependencyInjection\Configuration;
 use Lch\SeoBundle\Event\GenerateSeoTagsEvent;
 use Lch\SeoBundle\Event\GenerateSlugEvent;
+use Lch\SeoBundle\Event\GetEntitiesCriteriasForSitemapEvent;
 use Lch\SeoBundle\Exception\MissingSeoInterfaceException;
 use Lch\SeoBundle\LchSeoBundleEvents;
 use Lch\SeoBundle\Model\OpenGraph;
@@ -318,8 +319,9 @@ class Tools
     /**
      * @return \SimpleXMLElement
      */
-    public function generateSitemap()
+    public function generateSitemap(Request $request)
     {
+        $locale    = $request->get('_locale');
         $sitemap = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" ?><urlset />');
 
         // Define urlset
@@ -342,14 +344,30 @@ class Tools
             if (! $reflection->implementsInterface(SeoInterface::class)) {
                 throw new MissingSeoInterfaceException("{$entityClass} does not implements SeoInterface and therefore cannot be added to sitemap");
             }
+            if (! $reflection->implementsInterface(TranslatableInterface::class)) {
+                throw new MissingSeoInterfaceException("{$entityClass} does not implements TranslatableInterface and therefore cannot be added to sitemap");
+            }
 
-            // Get all entities
+            // Get all matching entities
+            // Send event to customize filters for getting entities regarding to specific criterias
+            $getEntitiesCriteriasEvent = new GetEntitiesCriteriasForSitemapEvent(
+                $entityClass,
+                ['language' => $locale]
+            );
+            $this->eventDispatcher->dispatch(
+                LchSeoBundleEvents::GET_ENTITIES_CRITERIAS,
+                $getEntitiesCriteriasEvent
+            );
             // TODO enhance with custom generic repository?
-            $entities = $this->entityManager->getRepository($entityClass)->findAll();
+            $entities = $this->entityManager->getRepository($entityClass)->findBy(
+                $getEntitiesCriteriasEvent->getCriteriasArray()
+            );
 
+
+            $excludedEntities = $data[Configuration::ENTITIES_EXCLUDE] ?? [];
             // Loop on them and add them to urlset
             foreach ($entities as $entityInstance) {
-                if (! in_array($entityInstance->getId(), $data[Configuration::ENTITIES_EXCLUDE])) {
+                if (! in_array($entityInstance->getId(), $excludedEntities)) {
                     $routeParameters = [];
 
                     $url = $this->getUrl($entityInstance);
@@ -357,7 +375,8 @@ class Tools
                     $urlNode = $urlSet->addChild('url');
                     $urlNode->addChild(Configuration::LOC, $url);
                     $urlNode->addChild(Configuration::PRIORITY,
-                        $this->priorityCalculation($this->getUrl($entityInstance, Router::RELATIVE_PATH)));
+                        $this->priorityCalculation($this->getUrl($entityInstance, Router::RELATIVE_PATH), $locale)
+                    );
                 }
             }
         }
@@ -367,10 +386,11 @@ class Tools
 
     /**
      * @param string $url
+     * @param string $locale
      *
      * @return float
      */
-    public function priorityCalculation(string $url)
+    public function priorityCalculation(string $url, string $locale)
     {
         $priority = 1.0;
         $urlParts = explode('/', $url);
