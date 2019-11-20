@@ -230,10 +230,10 @@ class Tools
 
         $openGraph = new OpenGraph();
         $seoTags   = new SeoTags();
-        $locale    = $entityOrRequest->get('_locale');
 
         // Handle request, for specific pages not linked to entities
         if ($entityOrRequest instanceof Request) {
+            $locale    = $entityOrRequest->get('_locale');
             $seoTags->setRequest($entityOrRequest);
             $seoTags->setOpenGraph($openGraph);
 
@@ -259,8 +259,14 @@ class Tools
         else {
             if (! $entityOrRequest instanceof SeoInterface || ! in_array(Seoable::class,
                     class_uses($entityOrRequest))) {
-                throw new MissingSeoInterfaceException('Given entity must implement SeoInterface class and use Seoable');
+                throw new MissingSeoInterfaceException('Given entity must implement SeoInterface interface and use Seoable');
             }
+
+            if (! $entityOrRequest instanceof TranslatableInterface) {
+                throw new MissingSeoInterfaceException('Given entity must implement TranslatableInterface');
+            }
+
+            $locale    = $entityOrRequest->getLanguage();
 
             // Init objects
             $openGraph = $entityOrRequest->getOpenGraphData();
