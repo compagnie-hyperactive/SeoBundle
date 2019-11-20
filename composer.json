@@ -14,7 +14,8 @@
     "require": {
         "php": "^7.0",
         "symfony/framework-bundle": "^3.4|^4.0",
-        "knplabs/doctrine-behaviors": "~1.1"
+        "knplabs/doctrine-behaviors": "~1.1",
+        "lch/translate-bundle": "^0.4.7"
     },
     "require-dev": {
         "doctrine/doctrine-bundle": "^1.3",
