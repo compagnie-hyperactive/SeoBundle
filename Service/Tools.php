@@ -29,6 +29,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
+// TODO split this in several single purposes classes (SOLID principles)
 class Tools
 {
     const DEFAULT_DELIMITER = '-';
@@ -59,9 +60,9 @@ class Tools
     protected $languageSwithHelper;
 
     /**
-     * @var array
+     * @var array $seoParameters
      */
-    protected $sitemapParameters;
+    protected $seoParameters;
 
     protected $schemeAndHttpHost;
 
@@ -71,19 +72,19 @@ class Tools
      * @param EntityManager $entityManager
      * @param EventDispatcherInterface $eventDispatcher
      * @param Router $router
-     * @param array $sitemapParameters
+     * @param array $seoParameters
      */
     public function __construct(
         EntityManager $entityManager,
         EventDispatcherInterface $eventDispatcher,
         Router $router,
         LangSwitchHelper $languageSwithHelper,
-        array $sitemapParameters
+        array $seoParameters
     ) {
         $this->entityManager       = $entityManager;
         $this->eventDispatcher     = $eventDispatcher;
         $this->router              = $router;
-        $this->sitemapParameters   = $sitemapParameters;
+        $this->seoParameters       = $seoParameters;
         $this->languageSwithHelper = $languageSwithHelper;
 
         $this->schemeAndHttpHost = "{$this->router->getContext()->getScheme()}://{$this->router->getContext()->getHost()}";
@@ -228,6 +229,7 @@ class Tools
 
         $openGraph = new OpenGraph();
         $seoTags   = new SeoTags();
+        $locale    = $entityOrRequest->get('_locale');
 
         // Handle request, for specific pages not linked to entities
         if ($entityOrRequest instanceof Request) {
@@ -235,8 +237,8 @@ class Tools
             $seoTags->setOpenGraph($openGraph);
 
             // Check if specific entry in config.yml yml match current route
-            if (isset($this->sitemapParameters[Configuration::SPECIFIC][$entityOrRequest->get('_route')])) {
-                $specificNodeTags = $this->sitemapParameters[Configuration::SPECIFIC][$entityOrRequest->get('_route')][Configuration::TAGS];
+            if (isset($this->seoParameters[$locale][Configuration::SPECIFIC][$entityOrRequest->get('_route')])) {
+                $specificNodeTags = $this->seoParameters[$locale][Configuration::SPECIFIC][$entityOrRequest->get('_route')][Configuration::TAGS];
                 $seoTags->setTitle($specificNodeTags[Configuration::TITLE]);
                 $seoTags->setDescription($specificNodeTags[Configuration::DESCRIPTION]);
                 $seoTags->setRoute($entityOrRequest->get('_route'));
@@ -301,7 +303,7 @@ class Tools
      */
     public function getUrl(SeoInterface $entityInstance, string $routeType = Router::ABSOLUTE_URL)
     {
-        if(!$entityInstance instanceof TranslatableInterface) {
+        if (! $entityInstance instanceof TranslatableInterface) {
             throw new MissingTranslatableInterfaceException('The entity ' . get_class($entityInstance) . ' must implement Translatable trait');
         }
         $routeParameters = [];
@@ -325,7 +327,7 @@ class Tools
         $urlSet->addAttribute('xlmns', 'http://www.sitemaps.org/schemas/sitemap/0.9');
 
         // Add specific items
-        foreach ($this->sitemapParameters[Configuration::SPECIFIC] as $specific) {
+        foreach ($this->seoParameters[$locale][Configuration::SPECIFIC] as $specific) {
             $specificNode = $specific[Configuration::SITEMAP];
             $specificUrl  = $urlSet->addChild('url');
             $specificUrl->addChild(Configuration::LOC, $this->schemeAndHttpHost . $specificNode[Configuration::LOC]);
@@ -333,7 +335,7 @@ class Tools
         }
 
         // Loop on given entities for listing
-        foreach ($this->sitemapParameters[Configuration::SITEMAP][Configuration::ENTITIES] as $entityClass => $data) {
+        foreach ($this->seoParameters[$locale][Configuration::SITEMAP][Configuration::ENTITIES] as $entityClass => $data) {
             // Check given entity implements SeoInterface
             $reflection = new \ReflectionClass($entityClass);
 
@@ -373,7 +375,7 @@ class Tools
         $priority = 1.0;
         $urlParts = explode('/', $url);
         foreach ($urlParts as $part) {
-            $priority -= floatval($this->sitemapParameters[Configuration::SITEMAP][Configuration::STEP]);
+            $priority -= floatval($this->seoParameters[$locale][Configuration::SITEMAP][Configuration::STEP]);
         }
 
         return $priority;
