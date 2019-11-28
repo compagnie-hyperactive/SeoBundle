@@ -245,7 +245,9 @@ class Tools
                 $seoTags->setRoute($entityOrRequest->get('_route'));
 
                 // TODO ensure or use route parameters ?
-                $seoTags->setCanonicalUrl($this->router->generate($entityOrRequest->get('_route'), [],
+                $seoTags->setCanonicalUrl($this->router->generate(
+                    $entityOrRequest->get('_route'),
+                    $entityOrRequest->get('_route_params'),
                     Router::ABSOLUTE_URL));
 
                 // Open Graph
