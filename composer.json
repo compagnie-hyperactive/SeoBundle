@@ -12,10 +12,15 @@
         }
     ],
     "require": {
-        "php": "^7.0",
-        "symfony/symfony": "^4.4",
+        "php": "^7.1",
+        "symfony/framework-bundle": "^4.2",
+        "symfony/twig-bundle": "^4.2",
+        "twig/extensions": "1.5.*",
+        "symfony/form": "^4.2",
         "symfony/orm-pack": "^1.0",
-        "knplabs/doctrine-behaviors": "^2.0"
+        "symfony/validator": "^4.2",
+        "knplabs/doctrine-behaviors": "^2.0",
+        "doctrine/annotations": "^1.8"
     },
     "require-dev": {
         "doctrine/doctrine-bundle": "^1.3",
