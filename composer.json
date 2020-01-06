@@ -13,8 +13,8 @@
     ],
     "require": {
         "php": "^7.0",
-        "symfony/symfony": "~3.4",
-        "knplabs/doctrine-behaviors": "~1.1"
+        "symfony/symfony": "^4.4",
+        "knplabs/doctrine-behaviors": "^2.0"
     },
     "require-dev": {
         "doctrine/doctrine-bundle": "^1.3",

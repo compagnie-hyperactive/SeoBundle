@@ -10,7 +10,7 @@ namespace Lch\SeoBundle\Event;
 
 
 use Lch\SeoBundle\Model\SeoTags;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class GenerateSeoTagsEvent extends Event
 {
