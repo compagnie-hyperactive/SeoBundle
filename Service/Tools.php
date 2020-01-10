@@ -10,6 +10,7 @@ namespace Lch\SeoBundle\Service;
 
 
 use Doctrine\ORM\EntityManager;
+use Lch\ComponentsBundle\Behaviour\Uuidable;
 use Lch\SeoBundle\Behaviour\Seoable;
 use Lch\SeoBundle\DependencyInjection\Configuration;
 use Lch\SeoBundle\Event\GenerateSeoTagsEvent;
@@ -24,6 +25,8 @@ use Lch\TranslateBundle\Exception\MissingTranslatableInterfaceException;
 use Lch\TranslateBundle\Model\Interfaces\TranslatableInterface;
 use Lch\TranslateBundle\Utils\LangSwitchHelper;
 use Lch\TranslateBundle\Model\Behavior\Translatable;
+use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -139,13 +142,41 @@ class Tools
     public function isSlugUnique($entity, $slug)
     {
         $entityClass = get_class($entity);
+        $params = [
+            'slug' => $slug
+        ];
 
-        $existingEntity = $this->entityManager->getRepository($entityClass)->findOneBy(['slug' => $slug]);
+        if($entity instanceof TranslatableInterface) {
+            $params['language'] = $entity->getLanguage();
+        }
+
+        $existingEntity = $this->entityManager->getRepository($entityClass)->findOneBy($params);
+
+
+        // No other entity found. This one is unique
+        if($existingEntity === null) {
+            return true;
+        }
+
+        // Compare IDs differently if Uuid or not
+        // TODO use class metadata checker to look for Uuidable trait
+        $entityId = $entity->getId();
+        $existingEntityId = $existingEntity->getId();
+
+        if($entityId instanceof UuidInterface && $existingEntityId instanceof UuidInterface) {
+            $entityIdComparison =  ($entityId->toString() !== $existingEntityId->toString());
+        }
+        else {
+            /** @var string $entityId */
+            /** @var string $existingEntityId */
+            $entityIdComparison =  ($entityId !== $existingEntityId);
+        }
+
         if (null !== $existingEntity &&
             $existingEntity instanceof $entityClass &&
             (null === $entity->getId() ||
              (null !== $entity->getId() &&
-              $existingEntity->getId() !== $entity->getId()))
+              $entityIdComparison))
         ) {
             return false;
         }
@@ -272,7 +303,7 @@ class Tools
 
             // Init objects
             $openGraph = $entityOrRequest->getOpenGraphData();
-
+            
             // Tweak image URL to add scheme and host if necessary
             if (strpos($openGraph->getImage(), '/') === 0) {
                 $openGraph->setImage($this->schemeAndHttpHost . $openGraph->getImage());
