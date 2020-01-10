@@ -8,8 +8,6 @@ use Doctrine\ORM\Event\LifecycleEventArgs;
 use Lch\SeoBundle\Behaviour\Seoable;
 use Lch\SeoBundle\Reflection\ClassAnalyzer;
 use Lch\SeoBundle\Service\Tools;
-use Symfony\Component\Config\Definition\Exception\Exception;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class SeoListener implements EventSubscriber
 {
