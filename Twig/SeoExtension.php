@@ -11,11 +11,14 @@ namespace Lch\SeoBundle\Twig;
 
 use Lch\SeoBundle\Service\Tools;
 use Symfony\Component\Config\Definition\Exception\Exception;
+use Twig\Environment;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
 
-class SeoExtension extends \Twig_Extension
+class SeoExtension extends AbstractExtension
 {
     /**
-     * @var \Twig_Environment $twig
+     * @var Environment $twig
      */
     private $twig;
 
@@ -24,7 +27,7 @@ class SeoExtension extends \Twig_Extension
      */
     private $seoTools;
 
-    public function __construct(\Twig_Environment $twig, Tools $seoTools) {
+    public function __construct(Environment $twig, Tools $seoTools) {
         $this->twig = $twig;
         $this->seoTools = $seoTools;
     }
@@ -32,10 +35,10 @@ class SeoExtension extends \Twig_Extension
     public function getFunctions()
     {
         return array(
-            new \Twig_SimpleFunction('get_entity_class', [$this, 'getEntityClass' ], [
+            new TwigFunction('get_entity_class', [$this, 'getEntityClass' ], [
                 'needs_environment' => false,
             ]),
-            new \Twig_SimpleFunction('render_seo_tags', [$this, 'renderSeoTags' ], [
+            new TwigFunction('render_seo_tags', [$this, 'renderSeoTags' ], [
                 'needs_environment' => false,
                 'is_safe' => array('html')
             ]),
@@ -45,6 +48,7 @@ class SeoExtension extends \Twig_Extension
     /**
      * @param object $entity
      * @return string
+     * @throws \ReflectionException
      */
     public function getEntityClass($entity) {
         if(!is_object($entity)) {
@@ -58,6 +62,9 @@ class SeoExtension extends \Twig_Extension
     /**
      * @param mixed $entityOrRequest
      * @return string
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      */
     public function renderSeoTags($entityOrRequest) {
         $seoTags = $this->seoTools->generateTags($entityOrRequest);
