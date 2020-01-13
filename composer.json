@@ -1,41 +1,41 @@
 {
-    "name": "lch/seo-bundle",
-    "type": "symfony-bundle",
-    "description": "Provides minimal SEO items on front-page-having entities : slug, title, description",
-    "keywords": ["SEO", "management", "symfony"],
-    "homepage": "https://github.com/compagnie-hyperactive/SeoBundle",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Nicolas BONNIOT",
-            "email": "nicolas@devgiants.fr"
-        }
-    ],
-    "require": {
-      "php": "^7.1",
-      "symfony/framework-bundle": "^4.2",
-      "symfony/twig-bundle": "^4.2",
-      "twig/extensions": "1.5.*",
-      "symfony/form": "^4.2",
-      "symfony/orm-pack": "^1.0",
-      "symfony/validator": "^4.2",
-      "knplabs/doctrine-behaviors": "^2.0",
-      "doctrine/annotations": "^1.8"
-    },
-    "require-dev": {
-        "doctrine/doctrine-bundle": "^1.3",
-        "phpunit/phpunit": "~4.8|~5.0"
-    },
-    "autoload": {
-        "psr-4": {
-            "Lch\\SeoBundle\\": ""
-        },
-        "exclude-from-classmap": [
-            "/Tests/"
-        ]
-    },
-    "autoload-dev": {
-        "psr-4": {
-        }
+  "name": "lch/seo-bundle",
+  "type": "symfony-bundle",
+  "description": "Provides minimal SEO items on front-page-having entities : slug, title, description",
+  "keywords": ["SEO", "management", "symfony"],
+  "homepage": "https://github.com/compagnie-hyperactive/SeoBundle",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Nicolas BONNIOT",
+      "email": "nicolas@devgiants.fr"
     }
+  ],
+  "require": {
+    "php": "^7.1",
+    "symfony/framework-bundle": "^4.2",
+    "symfony/twig-bundle": "^4.2",
+    "twig/extensions": "1.5.*",
+    "symfony/form": "^4.2",
+    "symfony/orm-pack": "^1.0",
+    "symfony/validator": "^4.2",
+    "knplabs/doctrine-behaviors": "^2.0",
+    "doctrine/annotations": "^1.8"
+  },
+  "require-dev": {
+    "doctrine/doctrine-bundle": "^1.3",
+    "phpunit/phpunit": "~4.8|~5.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Lch\\SeoBundle\\": ""
+    },
+    "exclude-from-classmap": [
+      "/Tests/"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+    }
+  }
 }
