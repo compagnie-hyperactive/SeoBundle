@@ -6,9 +6,11 @@ class ClassAnalyzer
 {
     /**
      * Return TRUE if the given object use the given trait, FALSE if not
-     * @param ReflectionClass $class
+     * @param \ReflectionClass $class
      * @param string $traitName
      * @param boolean $isRecursive
+     * @return bool
+     * @throws \ReflectionException
      */
     public function hasTrait(\ReflectionClass $class, $traitName, $isRecursive = false)
     {
