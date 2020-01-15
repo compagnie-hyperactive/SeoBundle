@@ -9,9 +9,9 @@
 				{{ form_row(form.seoTitle) }}
 				{{ form_row(form.seoDescription) }}
 				<div class="col-xs-12 no-gutter">
-					{{ form_label(form.slug) }}
+                    {{ form_widget(form.slug, {attr: {class:'slug'}}) }}
 					<div class="col-xs-8 widget">
-						{{ form_widget(form.slug) }}
+						{{ form_widget(form.slug, {class:'slug'}) }}
 						<p class="col-xs-12 helper">
 							<i class="glyphicon glyphicon-question-sign"></i>
 							{% if(form.parent.vars.value is not null and form.parent.vars.value.id != "") %}
@@ -38,6 +38,12 @@
 						   data-entity="{{ get_entity_class(form.parent.vars.value) }}"
 						   data-route="{{ form.vars.value.getRouteName }}"
 						   data-route-generation-path="{{ path('lch_seo_generate_slug') }}"
+							{% if(form.parent.vars.value is not null and form.parent.vars.value.id != "") %}
+								data-id="{{ form.parent.vars.value.id }}"
+							{% endif %}
+							{% if(form.parent.vars.value is not null and form.parent.vars.value.language is defined) %}
+								data-language="{{ form.parent.vars.value.language }}"
+							{% endif %}
 						>
 							<i class="glyphicon glyphicon-repeat"></i>
 							{{ 'lch.seo.form.url.generate'|trans }}
@@ -52,7 +58,7 @@
 {% block lch_slug_type_widget %}
     {% spaceless %}
 		<div id="seo-slug" class="col-xs-8 widget no-gutters">
-			{{ form_widget(form.slug) }}
+			{{ form_widget(form.slug, {attr: {class:'slug'}}) }}
 			<p class="col-xs-12 helper">
 				<i class="glyphicon glyphicon-question-sign"></i>
 				{% if(form.parent.vars.value.id != "") %}
@@ -62,7 +68,7 @@
 					{% endfor %}
 					<span>{{ 'lch.seo.form.url.example'|trans({'%url%': url(form.vars.value.getRouteName, fields)})|raw }}</span>
 					<span>&nbsp;&nbsp;&nbsp;</span>
-					<a href="{{ path(form.vars.value.getRouteName, fields) }}"
+					<a href="{{ translated_path(form.vars.value.getRouteName, fields) }}"
 					   target="_blank">{{ 'lch.seo.form.url.see'|trans }}</a>
 				{% else %}
 					{{ 'lch.seo.form.url.example'|trans({'%url%': url(form.vars.value.getRouteName, form.parent.vars.value.getRouteFields)})|raw }}
@@ -81,6 +87,12 @@
 			   data-entity="{{ get_entity_class(form.parent.vars.value) }}"
 			   data-route="{{ form.vars.value.getRouteName }}"
 			   data-route-generation-path="{{ path('lch_seo_generate_slug') }}"
+				{% if(form.parent.vars.value.id != "") %}
+					data-id="{{ form.parent.vars.value.id }}"
+				{% endif %}
+				{% if(form.parent.vars.value.language is defined) %}
+					data-language="{{ form.parent.vars.value.language }}"
+				{% endif %}
 			>
 				<i class="glyphicon glyphicon-repeat"></i>
 				{{ 'lch.seo.form.url.generate'|trans }}

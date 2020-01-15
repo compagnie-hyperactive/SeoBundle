@@ -68,7 +68,14 @@ class Tools
      */
     protected $seoParameters;
 
+    /** @var string $schemeAndHttpHost */
     protected $schemeAndHttpHost;
+
+    /** @var string $i18nStrategy */
+    protected $i18nStrategy;
+
+    /** @var string $defaultLocale */
+    protected $defaultLocale;
 
     /**
      * Tools constructor.
@@ -83,13 +90,17 @@ class Tools
         EventDispatcherInterface $eventDispatcher,
         Router $router,
         LangSwitchHelper $languageSwithHelper,
-        array $seoParameters
+        array $seoParameters,
+        string $i18nStrategy,
+        string $defaultLocale
     ) {
         $this->entityManager       = $entityManager;
         $this->eventDispatcher     = $eventDispatcher;
         $this->router              = $router;
         $this->seoParameters       = $seoParameters;
         $this->languageSwithHelper = $languageSwithHelper;
+        $this->i18nStrategy        = $i18nStrategy;
+        $this->defaultLocale       = $defaultLocale;
 
         $this->schemeAndHttpHost = "{$this->router->getContext()->getScheme()}://{$this->router->getContext()->getHost()}";
 
@@ -100,18 +111,23 @@ class Tools
     /**
      * @param $entityClass
      * @param $fields
+     * @param $language
      *
      * @return string
      */
-    public function generateSlug($entityClass, $fields)
+    public function generateSlug($entityClass, $fields, $entityId = null, $language = null)
     {
 
         // Get highest entity ID
-        $lastEntity   = $this->entityManager->getRepository($entityClass)->findOneBy([], ['id' => 'DESC']);
-        $lastEntityId = is_object($lastEntity) ? $lastEntity->getId() : 1;
+        if($entityId == null) {
+            $lastEntity   = $this->entityManager->getRepository($entityClass)->findOneBy([], ['id' => 'DESC']);
+            $entityId = is_object($lastEntity) ? $lastEntity->getId() : 1;   
+        } else {
+            $lastEntity   = $this->entityManager->getRepository($entityClass)->find($entityId);
+        }
 
         // Send event to generate slug
-        $generateEvent = new GenerateSlugEvent($entityClass, $lastEntityId, $fields);
+        $generateEvent = new GenerateSlugEvent($entityClass, $entityId, $fields);
         $this->eventDispatcher->dispatch(
             $generateEvent,
             LchSeoBundleEvents::GENERATE_SLUG
@@ -121,6 +137,7 @@ class Tools
             $slug = $generateEvent->getSlug();
         } else {
             $slug = "";
+            
             // sanitize each given field, in array order
             // This assume there is a unique index on slug fields collection, or slug filed if only one
             foreach ($fields as $field) {
@@ -142,11 +159,11 @@ class Tools
     public function isSlugUnique($entity, $slug)
     {
         $entityClass = get_class($entity);
-        $params = [
+        $params      = [
             'slug' => $slug
         ];
 
-        if($entity instanceof TranslatableInterface) {
+        if ($entity instanceof TranslatableInterface) {
             $params['language'] = $entity->getLanguage();
         }
 
@@ -154,22 +171,21 @@ class Tools
 
 
         // No other entity found. This one is unique
-        if($existingEntity === null) {
+        if ($existingEntity === null) {
             return true;
         }
 
         // Compare IDs differently if Uuid or not
         // TODO use class metadata checker to look for Uuidable trait
-        $entityId = $entity->getId();
+        $entityId         = $entity->getId();
         $existingEntityId = $existingEntity->getId();
 
-        if($entityId instanceof UuidInterface && $existingEntityId instanceof UuidInterface) {
-            $entityIdComparison =  ($entityId->toString() !== $existingEntityId->toString());
-        }
-        else {
+        if ($entityId instanceof UuidInterface && $existingEntityId instanceof UuidInterface) {
+            $entityIdComparison = ($entityId->toString() !== $existingEntityId->toString());
+        } else {
             /** @var string $entityId */
             /** @var string $existingEntityId */
-            $entityIdComparison =  ($entityId !== $existingEntityId);
+            $entityIdComparison = ($entityId !== $existingEntityId);
         }
 
         if (null !== $existingEntity &&
@@ -264,7 +280,7 @@ class Tools
 
         // Handle request, for specific pages not linked to entities
         if ($entityOrRequest instanceof Request) {
-            $locale    = $entityOrRequest->get('_locale');
+            $locale = $entityOrRequest->get('_locale');
             $seoTags->setRequest($entityOrRequest);
             $seoTags->setOpenGraph($openGraph);
 
@@ -299,11 +315,11 @@ class Tools
                 throw new MissingSeoInterfaceException('Given entity must implement TranslatableInterface');
             }
 
-            $locale    = $entityOrRequest->getLanguage();
+            $locale = $entityOrRequest->getLanguage();
 
             // Init objects
             $openGraph = $entityOrRequest->getOpenGraphData();
-            
+
             // Tweak image URL to add scheme and host if necessary
             if (strpos($openGraph->getImage(), '/') === 0) {
                 $openGraph->setImage($this->schemeAndHttpHost . $openGraph->getImage());
@@ -360,7 +376,7 @@ class Tools
      */
     public function generateSitemap(Request $request)
     {
-        $locale    = $request->get('_locale');
+        $locale  = $request->get('_locale');
         $sitemap = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" ?><urlset />');
 
         // Define urlset

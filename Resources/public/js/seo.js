@@ -4,8 +4,9 @@ $(document).ready(function() {
      *   Slug generator call in AJAX
      */
 
-    var $slugField =    $("input#page_seo_slug");
+    var $slugField =    $("input.slug");
     var $slugGenerateButton = $("#generateSlug");
+    var defaultLanguage = 'fr';
 
     if($slugGenerateButton.length === 1) {
         var fields = JSON.parse($slugGenerateButton.attr('data-fields'));
@@ -39,6 +40,14 @@ $(document).ready(function() {
             var data = {};
             data['fields'] = fieldsValues;
             data['entityClass'] = $(this).attr('data-entity');
+            var languageAttribute = $(this).attr('data-language');
+            if (typeof languageAttribute !== typeof undefined && languageAttribute !== false) {
+                data['language'] = languageAttribute === "" ? ($('[data-lang-watch]').data('langWatch') || null) : languageAttribute
+            }
+            var idAttribute = $(this).attr('data-id');
+            if (typeof idAttribute !== typeof undefined && idAttribute !== false) {
+                data['id'] = idAttribute
+            }
 
             $.ajax({
                 url: $slugGenerateButton.attr('data-route-generation-path'),
