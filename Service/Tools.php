@@ -113,8 +113,8 @@ class Tools
         // Send event to generate slug
         $generateEvent = new GenerateSlugEvent($entityClass, $lastEntityId, $fields);
         $this->eventDispatcher->dispatch(
-            LchSeoBundleEvents::GENERATE_SLUG,
-            $generateEvent
+            $generateEvent,
+            LchSeoBundleEvents::GENERATE_SLUG
         );
 
         if ($generateEvent->getSlug() !== "") {
@@ -328,8 +328,8 @@ class Tools
         // Send event to generate tags
         $generateEvent = new GenerateSeoTagsEvent($seoTags);
         $this->eventDispatcher->dispatch(
-            LchSeoBundleEvents::RENDER_SEO_TAGS,
-            $generateEvent
+            $generateEvent,
+            LchSeoBundleEvents::RENDER_SEO_TAGS
         );
 
         return $generateEvent->getSeoTags();
@@ -394,8 +394,8 @@ class Tools
                 ['language' => $locale]
             );
             $this->eventDispatcher->dispatch(
-                LchSeoBundleEvents::GET_ENTITIES_CRITERIAS,
-                $getEntitiesCriteriasEvent
+                $getEntitiesCriteriasEvent,
+                LchSeoBundleEvents::GET_ENTITIES_CRITERIAS
             );
             // TODO enhance with custom generic repository?
             $entities = $this->entityManager->getRepository($entityClass)->findBy(
