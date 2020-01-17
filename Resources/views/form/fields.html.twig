@@ -19,11 +19,11 @@
 								{% for routefield, entityField in form.parent.vars.value.getRouteFields %}
 									{% set fields = fields|merge({ (routefield) : attribute(form.parent.vars.value, entityField)|default((routefield)), '_locale': form.parent.vars.value.language}) %}
 								{% endfor %}
-								<span>{{ 'lch.seo.form.url.example'|trans({'%url%': translated_path(form.vars.value.getRouteName, fields)})|raw }}</span>
+								<span>{{ 'lch.seo.form.url.example'|trans({'%url%': translated_url(form.vars.value.getRouteName, fields)})|raw }}</span>
 								<span>&nbsp;&nbsp;&nbsp;</span>
-								<a href="{{ translated_path(form.vars.value.getRouteName, fields) }}" target="_blank">{{ 'lch.seo.form.url.see'|trans }}</a>
+								<a href="{{ translated_url(form.vars.value.getRouteName, fields) }}" target="_blank">{{ 'lch.seo.form.url.see'|trans }}</a>
 							{% else %}
-								{{ 'lch.seo.form.url.example'|trans({'%url%': translated_path(form.vars.value.getRouteName, form.parent.vars.value.getRouteFields|merge({'_locale': 'fr'}))})|raw }}
+								{{ 'lch.seo.form.url.example'|trans({'%url%': translated_url(form.vars.value.getRouteName, form.parent.vars.value.getRouteFields|merge({'_locale': 'fr'}))})|raw }}
 							{% endif %}
 						</p>
 						<div class="col-xs-12 errors alert alert-danger">
@@ -68,7 +68,7 @@
 					{% endfor %}
 					<span>{{ 'lch.seo.form.url.example'|trans({'%url%': url(form.vars.value.getRouteName, fields)})|raw }}</span>
 					<span>&nbsp;&nbsp;&nbsp;</span>
-					<a href="{{ translated_path(form.vars.value.getRouteName, fields) }}"
+					<a href="{{ translated_url(form.vars.value.getRouteName, fields) }}"
 					   target="_blank">{{ 'lch.seo.form.url.see'|trans }}</a>
 				{% else %}
 					{{ 'lch.seo.form.url.example'|trans({'%url%': url(form.vars.value.getRouteName, form.parent.vars.value.getRouteFields)})|raw }}

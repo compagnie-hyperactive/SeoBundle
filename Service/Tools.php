@@ -368,7 +368,7 @@ class Tools
         }
         $routeParameters['_locale'] = $entityInstance->getLanguage();
 
-        return $this->languageSwithHelper->getTranslatedPath($entityInstance->getRouteName(), $routeParameters);
+        return $this->languageSwithHelper->getTranslatedUrl($entityInstance->getRouteName(), $routeParameters);
     }
 
     /**
