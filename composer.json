@@ -20,7 +20,8 @@
     "symfony/orm-pack": "^1.0",
     "symfony/validator": "^4.2",
     "knplabs/doctrine-behaviors": "^2.0",
-    "doctrine/annotations": "^1.8"
+    "doctrine/annotations": "^1.8",
+    "lch/translate-bundle": "^0.5.3"
   },
   "require-dev": {
     "doctrine/doctrine-bundle": "^1.3",
