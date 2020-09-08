@@ -32,6 +32,7 @@ use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 // TODO split this in several single purposes classes (SOLID principles)
 class Tools
@@ -292,10 +293,17 @@ class Tools
                 $seoTags->setRoute($entityOrRequest->get('_route'));
 
                 // TODO ensure or use route parameters ?
-                $seoTags->setCanonicalUrl($this->router->generate(
-                    $entityOrRequest->get('_route'),
-                    $entityOrRequest->get('_route_params'),
-                    Router::ABSOLUTE_URL));
+                try {
+                    $this->languageSwithHelper->getTranslatedUrl(
+                        $entityOrRequest->get('_route'),
+                        $entityOrRequest->get('_route_params')
+                    );
+                } catch(RouteNotFoundException $e) {
+                    $seoTags->setCanonicalUrl($this->router->generate(
+                        $entityOrRequest->get('_route'),
+                        $entityOrRequest->get('_route_params'),
+                        Router::ABSOLUTE_URL));
+                }
 
                 // Open Graph
                 $openGraph->setTitle($seoTags->getTitle());
