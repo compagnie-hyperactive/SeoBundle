@@ -296,7 +296,9 @@ class Tools
                 try {
                     $seoTags->setCanonicalUrl($this->languageSwithHelper->getTranslatedUrl(
                         $entityOrRequest->get('_route'),
-                        $entityOrRequest->get('_route_params')
+                        $entityOrRequest->get('_route_params'),
+                        true,
+                        Router::ABSOLUTE_URL
                     )
                     );
                 } catch (RouteNotFoundException $e) {
@@ -339,7 +341,7 @@ class Tools
             $seoTags->setRoute($entityOrRequest->getRouteName());
 
             // Add route
-            $openGraph->setUrl($this->getUrl($entityOrRequest));
+            $openGraph->setUrl($this->getUrl($entityOrRequest, Router::ABSOLUTE_URL));
 
             $seoTags = new SeoTags();
             $seoTags->setOpenGraph($openGraph);
@@ -377,7 +379,14 @@ class Tools
         }
         $routeParameters['_locale'] = $entityInstance->getLanguage();
 
-        return $this->languageSwithHelper->getTranslatedUrl($entityInstance->getRouteName(), $routeParameters);
+        return $this
+            ->languageSwithHelper
+            ->getTranslatedUrl(
+                $entityInstance->getRouteName(),
+                $routeParameters,
+                true,
+                $routeType
+            );
     }
 
     /**
