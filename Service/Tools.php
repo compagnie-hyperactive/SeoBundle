@@ -443,7 +443,7 @@ class Tools
                 if (! in_array($entityInstance->getId(), $excludedEntities)) {
                     $routeParameters = [];
 
-                    $url = $this->getUrl($entityInstance);
+                    $url = $this->getUrl($entityInstance, Router::ABSOLUTE_URL);
 
                     $urlNode = $urlSet->addChild('url');
                     $urlNode->addChild(Configuration::LOC, $url);
