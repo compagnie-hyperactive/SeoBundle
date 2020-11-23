@@ -120,11 +120,11 @@ class Tools
     {
 
         // Get highest entity ID
-        if($entityId == null) {
-            $lastEntity   = $this->entityManager->getRepository($entityClass)->findOneBy([], ['id' => 'DESC']);
-            $entityId = is_object($lastEntity) ? $lastEntity->getId() : 1;   
+        if ($entityId == null) {
+            $lastEntity = $this->entityManager->getRepository($entityClass)->findOneBy([], ['id' => 'DESC']);
+            $entityId   = is_object($lastEntity) ? $lastEntity->getId() : 1;
         } else {
-            $lastEntity   = $this->entityManager->getRepository($entityClass)->find($entityId);
+            $lastEntity = $this->entityManager->getRepository($entityClass)->find($entityId);
         }
 
         // Send event to generate slug
@@ -138,7 +138,7 @@ class Tools
             $slug = $generateEvent->getSlug();
         } else {
             $slug = "";
-            
+
             // sanitize each given field, in array order
             // This assume there is a unique index on slug fields collection, or slug filed if only one
             foreach ($fields as $field) {
@@ -294,11 +294,12 @@ class Tools
 
                 // TODO ensure or use route parameters ?
                 try {
-                    $this->languageSwithHelper->getTranslatedUrl(
+                    $seoTags->setCanonicalUrl($this->languageSwithHelper->getTranslatedUrl(
                         $entityOrRequest->get('_route'),
                         $entityOrRequest->get('_route_params')
+                    )
                     );
-                } catch(RouteNotFoundException $e) {
+                } catch (RouteNotFoundException $e) {
                     $seoTags->setCanonicalUrl($this->router->generate(
                         $entityOrRequest->get('_route'),
                         $entityOrRequest->get('_route_params'),
