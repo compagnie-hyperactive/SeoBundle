@@ -9,7 +9,7 @@
 namespace Lch\SeoBundle\Twig;
 
 
-use Lch\SeoBundle\Service\Tools;
+use Lch\SeoBundle\Service\ToolsInterface;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Twig\Environment;
 use Twig\Extension\AbstractExtension;
@@ -23,11 +23,11 @@ class SeoExtension extends AbstractExtension
     private $twig;
 
     /**
-     * @var Tools
+     * @var ToolsInterface
      */
     private $seoTools;
 
-    public function __construct(Environment $twig, Tools $seoTools) {
+    public function __construct(Environment $twig, ToolsInterface $seoTools) {
         $this->twig = $twig;
         $this->seoTools = $seoTools;
     }

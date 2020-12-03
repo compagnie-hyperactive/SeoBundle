@@ -35,9 +35,8 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 // TODO split this in several single purposes classes (SOLID principles)
-class Tools
+class Tools implements ToolsInterface
 {
-    const DEFAULT_DELIMITER = '-';
     /**
      * @var EntityManager
      */
@@ -120,11 +119,11 @@ class Tools
     {
 
         // Get highest entity ID
-        if ($entityId == null) {
-            $lastEntity = $this->entityManager->getRepository($entityClass)->findOneBy([], ['id' => 'DESC']);
-            $entityId   = is_object($lastEntity) ? $lastEntity->getId() : 1;
+        if($entityId == null) {
+            $lastEntity   = $this->entityManager->getRepository($entityClass)->findOneBy([], ['id' => 'DESC']);
+            $entityId = is_object($lastEntity) ? $lastEntity->getId() : 1;   
         } else {
-            $lastEntity = $this->entityManager->getRepository($entityClass)->find($entityId);
+            $lastEntity   = $this->entityManager->getRepository($entityClass)->find($entityId);
         }
 
         // Send event to generate slug
@@ -138,7 +137,7 @@ class Tools
             $slug = $generateEvent->getSlug();
         } else {
             $slug = "";
-
+            
             // sanitize each given field, in array order
             // This assume there is a unique index on slug fields collection, or slug filed if only one
             foreach ($fields as $field) {
@@ -294,14 +293,11 @@ class Tools
 
                 // TODO ensure or use route parameters ?
                 try {
-                    $seoTags->setCanonicalUrl($this->languageSwithHelper->getTranslatedUrl(
+                    $this->languageSwithHelper->getTranslatedUrl(
                         $entityOrRequest->get('_route'),
-                        $entityOrRequest->get('_route_params'),
-                        true,
-                        Router::ABSOLUTE_URL
-                    )
+                        $entityOrRequest->get('_route_params')
                     );
-                } catch (RouteNotFoundException $e) {
+                } catch(RouteNotFoundException $e) {
                     $seoTags->setCanonicalUrl($this->router->generate(
                         $entityOrRequest->get('_route'),
                         $entityOrRequest->get('_route_params'),
@@ -341,7 +337,7 @@ class Tools
             $seoTags->setRoute($entityOrRequest->getRouteName());
 
             // Add route
-            $openGraph->setUrl($this->getUrl($entityOrRequest, Router::ABSOLUTE_URL));
+            $openGraph->setUrl($this->getUrl($entityOrRequest));
 
             $seoTags = new SeoTags();
             $seoTags->setOpenGraph($openGraph);
@@ -379,14 +375,7 @@ class Tools
         }
         $routeParameters['_locale'] = $entityInstance->getLanguage();
 
-        return $this
-            ->languageSwithHelper
-            ->getTranslatedUrl(
-                $entityInstance->getRouteName(),
-                $routeParameters,
-                true,
-                $routeType
-            );
+        return $this->languageSwithHelper->getTranslatedUrl($entityInstance->getRouteName(), $routeParameters);
     }
 
     /**
@@ -443,7 +432,7 @@ class Tools
                 if (! in_array($entityInstance->getId(), $excludedEntities)) {
                     $routeParameters = [];
 
-                    $url = $this->getUrl($entityInstance, Router::ABSOLUTE_URL);
+                    $url = $this->getUrl($entityInstance);
 
                     $urlNode = $urlSet->addChild('url');
                     $urlNode->addChild(Configuration::LOC, $url);

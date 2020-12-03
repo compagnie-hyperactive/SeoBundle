@@ -7,12 +7,12 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Lch\SeoBundle\Behaviour\Seoable;
 use Lch\SeoBundle\Reflection\ClassAnalyzer;
-use Lch\SeoBundle\Service\Tools;
+use Lch\SeoBundle\Service\ToolsInterface;
 
 class SeoListener implements EventSubscriber
 {
 	/**
-	 * @var Tools
+	 * @var ToolsInterface
 	 */
 	private $tools;
 
@@ -27,9 +27,9 @@ class SeoListener implements EventSubscriber
     }
 
 	/**
-	 * @param Tools $tools
+	 * @param ToolsInterface $tools
 	 */
-    public function setTools(Tools $tools) {
+    public function setTools(ToolsInterface $tools) {
     	$this->tools = $tools;
     }
 
