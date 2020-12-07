@@ -293,11 +293,14 @@ class Tools implements ToolsInterface
 
                 // TODO ensure or use route parameters ?
                 try {
-                    $this->languageSwithHelper->getTranslatedUrl(
+                    $seoTags->setCanonicalUrl($this->languageSwithHelper->getTranslatedUrl(
                         $entityOrRequest->get('_route'),
-                        $entityOrRequest->get('_route_params')
+                        $entityOrRequest->get('_route_params'),
+                        true,
+                        Router::ABSOLUTE_URL
+                    )
                     );
-                } catch(RouteNotFoundException $e) {
+                } catch (RouteNotFoundException $e) {
                     $seoTags->setCanonicalUrl($this->router->generate(
                         $entityOrRequest->get('_route'),
                         $entityOrRequest->get('_route_params'),

@@ -16,6 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @package Lch\SeoBundle\Behaviour
  */
 trait Seoable {
+
     /**
      * @var string
      * @ORM\Column(name="seo_slug", type="string", length=128, nullable=true, unique=true)
